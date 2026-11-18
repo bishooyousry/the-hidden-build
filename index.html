@@ -328,6 +328,12 @@ select{background:#0c1930;color:#fff;border:1px solid #496389;border-radius:10px
 @media(max-width:860px){.buildgrid{grid-template-columns:1fr}.tiles,.teamcards,.rules{grid-template-columns:1fr}.cmpwrap{gap:10px}}
 @media(max-width:410px){.sw{width:44px;height:44px}.tile h3{font-size:16px}}
 
+.pinbox{margin:10px 0;padding:10px;border-radius:12px;background:#0b1831;border:1px dashed var(--gold)}
+.pinbox .board{--cs:clamp(18px,calc((min(100vw,520px) - 120px)/9),30px);margin:4px auto 0}
+.accbar.big{height:26px}.projprog{display:flex;gap:12px;align-items:center}.projprog .accbar{flex:1}.projprog b{font:900 1.4em ui-monospace,monospace;min-width:3.2em;text-align:end}
+.projshow{position:fixed;top:14px;inset-inline-start:14px;z-index:2}.projshow.on{border-color:var(--mint);background:#123c3c}
+#exitBtn.danger{background:#4a2424}
+
 </style></head><body>
 <canvas id="bg" aria-hidden="true"></canvas><div class="labbg" aria-hidden="true"></div><div class="scan" aria-hidden="true"></div>
 <div class="app" id="app">
@@ -350,7 +356,7 @@ select{background:#0c1930;color:#fff;border:1px solid #496389;border-radius:10px
 </div></section>
 
 <section id="game" class="hide">
-<div class="row between"><div class="eyebrow" id="agentTag"></div><button class="chip hide" id="trophyBtn" aria-label="Leaderboard">🏆</button></div>
+<div class="row between"><div class="eyebrow" id="agentTag"></div><div class="row"><button class="chip hide" id="trophyBtn" aria-label="Leaderboard">🏆</button><button class="chip" id="exitBtn" data-i="exit">EXIT</button></div></div>
 <div class="hud"><div class="rail" id="rail"></div>
 <div class="hudrow"><div class="energy" id="energy"><span id="eLbl">TIME</span><div class="ebar"><i id="eFill"></i></div><b id="ePct">--:--</b></div>
 <span class="stat" id="stTeam">—</span><span class="stat" id="stScore">★ <strong id="score">0</strong></span></div></div>
@@ -368,7 +374,8 @@ select{background:#0c1930;color:#fff;border:1px solid #496389;border-radius:10px
 <div class="codebox"><div><div class="small muted" data-i="codeLabel">SESSION CODE</div><div class="bigcode" id="bigCode">-----</div></div>
 <div class="grow"><label for="labelInput" style="margin-top:0" data-i="sessName">SESSION NAME</label><input id="labelInput" maxlength="30"><label for="linkField" data-i="playerLink">PLAYER LINK</label><input readonly id="linkField"></div></div>
 <div class="row"><button class="primary" id="copyLink" data-i="copyLink">COPY PLAYER LINK</button><button class="btn" id="copyArabic" data-i="copyArabic">COPY ARABIC LINK</button><button class="btn" id="projBtn" data-i="project">PROJECTOR VIEW</button><button class="btn" id="resetBtn" data-i="resetSess">RESET SESSION</button><button class="btn" id="closeBtn" data-i="closeSess">CLOSE SESSION</button></div>
-<div class="card startcard" id="startCard"><div class="row"><div><label for="shapeSel" style="margin-top:0" data-i="shapeLbl">BLUEPRINT</label><select id="shapeSel"></select></div><div><label for="timeSel" style="margin-top:0" data-i="timeLbl">ROUND TIME</label><select id="timeSel"><option value="90">1:30</option><option value="180">3:00</option><option value="240" selected>4:00</option><option value="300">5:00</option></select></div></div>
+<div class="card startcard" id="startCard"><div class="row"><div><label for="shapeSel" style="margin-top:0" data-i="shapeLbl">BLUEPRINT</label><select id="shapeSel"></select></div><div><label for="timeSel" style="margin-top:0" data-i="timeLbl">ROUND TIME</label><select id="timeSel"><option value="90">1:30</option><option value="180">3:00</option><option value="240" selected>4:00</option><option value="300">5:00</option></select></div>
+<div><label for="pinSel" style="margin-top:0" data-i="pinLbl">PIN</label><select id="pinSel"><option value="0" data-i="pinOff">Off</option><option value="1" data-i="pinOn">On</option></select></div></div>
 <div id="readyRow" class="readyrow"></div>
 <div class="row"><button class="primary gold" id="startBtn" data-i="startRound">START ROUND</button><button class="btn" id="endRoundBtn" data-i="endRound">END ROUND NOW</button><span class="bigtimer" id="trTimer"></span></div></div>
 <div class="trainergrid"><div class="card"><div data-i="players">Players joined</div><strong id="playerCount">0</strong></div><div class="card"><div data-i="teamsReady">Teams ready</div><strong id="readyCount">0</strong></div><div class="card"><div data-i="roundState">Round</div><strong id="roundState">—</strong></div></div>
@@ -386,7 +393,7 @@ select{background:#0c1930;color:#fff;border:1px solid #496389;border-radius:10px
 
 <div class="overlay hide" id="rankOverlay" role="dialog" aria-modal="true"><div class="panel"><div class="row between"><div><div class="eyebrow">MISSION CONTROL</div><h2 data-i="ranking">LEADERBOARD</h2></div><button class="btn" id="closeRank" aria-label="Close">✕</button></div><div id="rankRows"></div><p class="small muted" data-i="rankingNote"></p></div></div>
 
-<div class="overlay proj hide" id="proj" role="dialog" aria-modal="true"><button class="btn projclose" id="projClose" aria-label="Close">✕</button><div class="projwrap"><div class="eyebrow" style="font-size:16px">SKILLS BANK // THE HIDDEN BUILD</div><div class="projjoin" id="projJoinBox"><div class="small muted" data-i="projJoin" style="font-size:18px">JOIN AT</div><div class="u" id="projUrl"></div><div class="bigcode xl" id="projCode"></div></div><div id="projBody"></div></div></div>
+<div class="overlay proj hide" id="proj" role="dialog" aria-modal="true"><button class="btn projclose" id="projClose" aria-label="Close">✕</button><button class="btn projshow" id="projShowBtn" data-i="projShow">SHOW BUILDS</button><div class="projwrap"><div class="eyebrow" style="font-size:16px">SKILLS BANK // THE HIDDEN BUILD</div><div class="projjoin" id="projJoinBox"><div class="small muted" data-i="projJoin" style="font-size:18px">JOIN AT</div><div class="u" id="projUrl"></div><div class="bigcode xl" id="projCode"></div></div><div id="projBody"></div></div></div>
 
 <div class="peek hide" id="peek" role="dialog" aria-modal="true"></div>
 <div class="splash hide" id="splash"><div class="sp-sub" id="spSub"></div><div class="sp-big" id="spBig"></div><div class="sp-small" id="spSmall"></div></div>
@@ -464,7 +471,7 @@ function showNet(){const n=$('net');const S=mode==='trainer'?TR.sessions.get(TR.
  const rs=$('relayStatus');if(rs){const S2=TR.sessions.get(TR.active);rs.textContent=(!S2||isLive(S2))?'':L('Cannot reach the relay ('+RELAY+'). Check the internet / network blocking, or use the backup import.','تعذر الوصول إلى الوسيط ('+RELAY+'). تحقق من الإنترنت أو حظر الشبكة، أو استخدم الاستيراد الاحتياطي.')+(S2.err?' ['+S2.err+']':'')}}
 setInterval(()=>{try{showNet()}catch(e){}},5000);
 const outbox=[];let flushing=false;
-function publish(S,obj){if(!S)return;outbox.push({S,topic:topicOf(S),payload:{...obj,v:1,session:S.code,at:Date.now()},tries:0});flush()}
+function publish(S,obj){if(!S)return;outbox.push({S,topic:topicOf(S),payload:{...obj,v:1,session:S.code,at:obj.at||Date.now()},tries:0});flush()}
 async function flush(){if(flushing)return;flushing=true;let warned=false;
  while(outbox.length){const it=outbox[0];
   try{const r=await fetch(RELAY+'/'+it.topic,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(it.payload)});if(!r.ok){const e=Error('HTTP '+r.status);e.status=r.status;throw e}try{const j=await r.json();if(j&&j.time)setSrv(j.time*1000)}catch(e2){}outbox.shift();it.S.sendAt=Date.now();it.S.err='';showNet()}
@@ -578,12 +585,13 @@ function ingest(S,x,T){
  if(x.type==='end'){S.ended=true;return{type:'end'}}
  if(x.type==='start'){if(S.round)return null;const shape=Math.round(Number(x.shape)),secs=Math.round(Number(x.secs));if(!(shape>=0&&shape<SHAPES.length)||!(secs>=30&&secs<=1200))return null;
   const roster={};for(let t=0;t<NTEAMS;t++){const m=effMessenger(S,t);roster[t]={mid:m?m.id:'',bids:m?teamMembers(S,t).filter(p=>p.id!==m.id).slice(0,MAXB).map(p=>p.id):[]}}
-  S.round={t0:T,shape,secs,roster,endT:0};return{type:'start'}}
+  S.round={t0:T,shape,secs,roster,endT:0,pin:x.pin?1:0};return{type:'start'}}
  if(x.type==='endround'){if(S.round&&!S.round.endT){S.round.endT=T;return{type:'endround'}}return null}
- if(!['join','chat','peek','part','rate','refl'].includes(x.type))return null;
+ if(!['join','leave','chat','peek','part','rate','refl'].includes(x.type))return null;
  if(typeof x.id!=='string'||typeof x.name!=='string'||!x.id||!x.name)return null;
  const old=S.players.get(x.id),isNew=!old;
- const p=old?{...old,ts:{...old.ts}}:{id:x.id,name:'',team:-1,role:'b',mAt:0,style:-1,firstAt:T,clarity:0,refl:'',ts:{}};
+ if(x.type==='leave'){if(!S.round)S.players.delete(x.id);return{type:'leave',p:null,isNew:false}}
+ const p=old?{...old,ts:{...old.ts}}:{id:x.id,name:'',team:-1,role:'b',mAt:0,style:-1,firstAt:at||T,clarity:0,refl:'',ts:{}};
  p.name=x.name.slice(0,48);
  const num=(v,d,a,b)=>{v=Math.round(Number(v));return Number.isFinite(v)?Math.max(a,Math.min(b,v)):d};
  if(x.type==='join'&&at>=(p.ts.join||0)){p.ts.join=at;const tm=num(x.team,-1,-1,NTEAMS-1);p.team=tm;p.role=x.role==='m'?'m':'b';p.mAt=p.role==='m'?(Number(x.mAt)||at):0;p.style=num(x.style,-1,-1,3)}
@@ -645,7 +653,7 @@ ranking:['🏆 TEAM LEADERBOARD','🏆 ترتيب الفرق'],rankingNote:['Ran
 codeLabel:['SESSION CODE','كود السيشن'],sessName:['SESSION NAME (optional)','اسم السيشن (اختياري)'],playerLink:['PLAYER LINK','رابط المشاركين'],
 project:['📽 PROJECTOR VIEW','📽 عرض البروجكتر'],resetSess:['↻ RESET SESSION','↻ إعادة ضبط السيشن'],closeSess:['✕ CLOSE SESSION','✕ إغلاق السيشن'],
 coverage:['DEBRIEF PANEL','لوحة النقاش'],guide:['FACILITATOR GUIDE (timing & debrief)','دليل المدرب (التوقيت والنقاش)'],
-projJoin:['JOIN AT','ادخل على'],noSession:['No session yet. Press “+ NEW SESSION”.','لا توجد سيشنات. اضغط «+ سيشن جديد».']};
+projJoin:['JOIN AT','ادخل على'],exit:['⏏ EXIT','⏏ خروج'],pinLbl:['MESSENGER PIN','تثبيت المخطط'],pinOff:['Off (memory only)','متوقف (بالذاكرة فقط)'],pinOn:['On (Messenger can pin)','مفعّل (يثبّت الـ Messenger المخطط)'],projShow:['👁 SHOW BUILDS','👁 إظهار رسومات الفرق'],noSession:['No session yet. Press “+ NEW SESSION”.','لا توجد سيشنات. اضغط «+ سيشن جديد».']};
 const tt=k=>T[k]?T[k][IDX()]:k;
 const STAGES=[['TEAM UP','كوّنوا الفريق'],['BUILD','البناء'],['REVEAL','الكشف']];
 const RULES=[['👁',['Only the Messenger can see the blueprint, as often as needed.','الـ Messenger وحده يرى المخطط، بقدر ما يحتاج.']],['🧱',['Each Builder builds one part of the picture and never sees the blueprint.','كل Builder يبني جزءًا واحدًا من الصورة ولا يرى المخطط أبدًا.']],['💬',['Talk in the team chat (or on your call). No screenshots, no notes.','تواصلوا في شات الفريق (أو في المكالمة). ممنوع التصوير والملاحظات.']],['⏱',['One round. The trainer starts the clock for every team at once.','جولة واحدة. المدرب يبدأ العدّاد لكل الفرق في نفس اللحظة.']]];
@@ -662,7 +670,7 @@ const DEBRIEF_Q=[['What are the guidelines for cascading a goal so everyone can 
 
 /* ===== GAME LOGIC: THE HIDDEN BUILD — stage 1 team up · stage 2 build (Messenger / Builder) · stage 3 reveal ===== */
 let PS=null,busy=false,renderTok=0,peeking=false,finishing=false,sendTimer=0,lastSec=-1,skipAsm=false,asmDone=false;
-const emptyMe=()=>({name:'',id:'',code:'',stage:1,team:-1,role:'b',mAt:0,style:-1,tool:'R',part:'',peeks:0,locked:false,sentAt:0,clarity:0,refl:'',saved:false,asmSeen:false,doneSent:false});
+const emptyMe=()=>({name:'',id:'',code:'',stage:1,team:-1,role:'b',mAt:0,style:-1,tool:'R',part:'',peeks:0,locked:false,sentAt:0,clarity:0,refl:'',saved:false,asmSeen:false,doneSent:false,pinned:false});
 let me=emptyMe();
 const saveMe=()=>store.set('hb_me',JSON.stringify(me));
 const nameOf=id=>{const p=PS&&PS.players.get(id);return p?p.name:'?'};
@@ -671,7 +679,7 @@ function bindPS(){if(PS&&PS.code!==me.code){sessStop(PS);PS=null}if(me.code&&!PS
 function ensureLive(){if(PS&&!PS.es)sessConnect(PS)}
 async function copyText(t){try{await navigator.clipboard.writeText(t);toast(L('Copied!','تم النسخ!'));return}catch(e){}try{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.append(ta);ta.select();document.execCommand('copy');ta.remove();toast(L('Copied!','تم النسخ!'))}catch(e){toast(L('Copy failed — select the text and copy manually.','تعذر النسخ — حدّد النص وانسخه يدويًا.'))}}
 /* ---- messaging helpers: publish to the relay AND apply locally so the UI never waits for the echo ---- */
-function send(x){if(!PS)return;const m={...x,id:me.id,name:me.name};publish(PS,m);const a={...m,v:1,session:PS.code,at:Date.now()};const info=ingest(PS,a,nowMs());return info}
+function send(x){if(!PS)return;const at=Date.now(),m={...x,id:me.id,name:me.name,at};publish(PS,m);if(x.type==='part'&&x.lock)return null;/* lock time comes from the relay echo so every device scores identically */return ingest(PS,{...m,v:1,session:PS.code},nowMs())}
 const myRoster=()=>{const r=PS&&PS.round;return r&&me.team>=0?r.roster[me.team]:null};
 function myRole(){const r=PS&&PS.round;if(r){const R=myRoster();if(R){if(R.mid===me.id)return'm';if(R.bids.includes(me.id))return'b'}return'x'}const m=PS&&me.team>=0?effMessenger(PS,me.team):null;return me.role==='m'&&(!m||m.id===me.id)?'m':'b'}
 const myZone=()=>{const R=myRoster();return R?R.bids.indexOf(me.id):-1};
@@ -768,7 +776,7 @@ async function countdown(tok){
 function topbar(role){const tm=TEAMS[me.team],R=myRoster(),z=myZone();return '<div class="row between" style="margin-bottom:6px"><div><div class="eyebrow" style="color:'+tm.c+'">'+tm.ic+' '+esc(LT(tm.n))+' · '+(role==='m'?'👁 MESSENGER':'🧱 BUILDER · '+esc(zoneName(R.bids.length,z)))+'</div></div></div>'}
 function messengerHTML(){
  return '<div class="buildgrid"><div class="panel bpanel">'+topbar('m')+'<h2 style="margin:4px 0">'+L('You hold the secret','أنت تحمل السر')+'</h2><p class="muted" style="line-height:1.6;margin:4px 0">'+L('Only you can see the blueprint. Your Builders are waiting. Tell them what they need to build.','أنت وحدك ترى المخطط، وفريق الـ Builders ينتظرك. أخبرهم بما عليهم بناؤه.')+'</p>'+
- '<button class="primary gold peekbtn pulse-btn" id="peekBtn">🚶 '+L('GO CHECK THE BLUEPRINT','اذهب لرؤية المخطط')+'</button><div class="small muted" id="peekInfo"></div><div class="rosterbox" id="rosterBox"></div><div class="hint2">'+L('Builders each own a column range, labelled in the blueprint. No screenshots, no notes.','لكل Builder نطاق أعمدة يظهر مسمّى في المخطط. ممنوع التصوير والملاحظات.')+'</div></div>'+chatPanelHTML(false)+'</div>'}
+ '<button class="primary gold peekbtn pulse-btn" id="peekBtn">🚶 '+L('GO CHECK THE BLUEPRINT','اذهب لرؤية المخطط')+'</button><div class="small muted" id="peekInfo"></div><div id="pinBox"></div><div class="rosterbox" id="rosterBox"></div><div class="hint2">'+L('Builders each own a column range, labelled in the blueprint. No screenshots, no notes.','لكل Builder نطاق أعمدة يظهر مسمّى في المخطط. ممنوع التصوير والملاحظات.')+'</div></div>'+chatPanelHTML(false)+'</div>'}
 function builderHTML(){
  const R=myRoster(),z=myZone(),zr=zoneRanges(R.bids.length),{x0,w}=zr[z];
  let b='<div class="board'+(me.locked?' locked':'')+'" id="board" style="--cols:'+W+'">';
@@ -794,19 +802,20 @@ function wireChat(){chatCount=-1;const inp=$('cin');if(!inp)return;const go=()=>
 function sendChat(text){text=String(text||'').trim().slice(0,240);if(!text)return;if(phase(PS)!=='build'){snd('err');toast(L('Chat opens when the clock starts','الشات يفتح عند بدء العدّاد'));return}
  send({type:'chat',team:me.team,text,cid:rand().slice(0,10)});snd('send');renderChat()}
 /* messenger: peek */
-function wireMessenger(){$('peekBtn').onclick=doPeek}
+function wireMessenger(){$('peekBtn').onclick=doPeek;renderPin()}
+function renderPin(){const b=$('pinBox');if(!b)return;if(!(PS&&PS.round&&PS.round.pin&&me.pinned)){b.innerHTML='';return}const R=myRoster(),zr=zoneRanges(R.bids.length);b.innerHTML='<div class="pinbox"><div class="row between"><b>📌 '+L('PINNED BLUEPRINT','المخطط المثبّت')+'</b><button class="btn xs" id="unpinBtn">'+L('UNPIN','إلغاء التثبيت')+'</button></div><div class="zlabels" style="--cols:'+W+'">'+zr.map((r,z)=>'<span style="grid-column:'+(r.x0+1)+'/span '+r.w+';--z:'+ZC[z]+'">'+esc(nameOf(R.bids[z]))+'</span>').join('')+'</div>'+boardHTML(target(PS),{zones:zr})+'</div>';$('unpinBtn').onclick=()=>{me.pinned=false;saveMe();snd('deselect');renderPin()}}
 const wmURL=n=>'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="260" height="110"><text x="10" y="60" fill="#fff" font-size="15" font-family="Arial" transform="rotate(-18 130 55)">'+String(n).replace(/[<&>"]/g,'')+' · NO PHOTOS</text></svg>');
 function blueprintHTML(){const R=myRoster(),zr=zoneRanges(R.bids.length),tg=target(PS);
  return '<div class="pkwrap" style="--wm:url(\''+wmURL(me.name)+'\')"><div class="pkhead"><b>🔒 '+L('SECRET BLUEPRINT','المخطط السري')+'</b><span id="pkT">'+PEEK_SECS+'</span></div><div class="pkbar"><i id="pkBar"></i></div>'+
- '<div class="zlabels" style="--cols:'+W+'">'+zr.map((r,z)=>'<span style="grid-column:'+(r.x0+1)+'/span '+r.w+';--z:'+ZC[z]+'">'+esc(zoneName(zr.length,z)+' · '+nameOf(R.bids[z]))+'</span>').join('')+'</div>'+boardHTML(tg,{zones:zr})+'<p class="small muted" style="text-align:center">'+L('No screenshots. No notes. Just your memory.','ممنوع التصوير والملاحظات. اعتمد على ذاكرتك فقط.')+'</p></div>'}
+ '<div class="zlabels" style="--cols:'+W+'">'+zr.map((r,z)=>'<span style="grid-column:'+(r.x0+1)+'/span '+r.w+';--z:'+ZC[z]+'">'+esc(zoneName(zr.length,z)+' · '+nameOf(R.bids[z]))+'</span>').join('')+'</div>'+boardHTML(tg,{zones:zr})+'<p class="small muted" style="text-align:center">'+L('No screenshots. No notes. Just your memory.','ممنوع التصوير والملاحظات. اعتمد على ذاكرتك فقط.')+'</p>'+(PS.round.pin?'<div class="row" style="justify-content:center"><button class="primary" id="pinIt">📌 '+L('PIN IT TO MY SCREEN','ثبّته على شاشتي')+'</button></div>':'')+'</div>'}
 async function doPeek(){
  if(peeking||phase(PS)!=='build')return;const tok=renderTok;peeking=true;me.peeks++;saveMe();send({type:'peek',team:me.team,cid:rand().slice(0,10)});renderRosterMini();
  const ov=$('peek');ov.className='peek';ov.innerHTML='<div class="walkbox"><div class="walker">🚶</div><b>'+L('WALKING TO THE BLUEPRINT…','في الطريق إلى المخطط…')+'</b><br><small class="muted">'+L('You cannot type while you are away','لا يمكنك الكتابة وأنت بعيد')+'</small></div>';
  for(let i=0;i<4;i++){snd('foot');await sleep(RM()?120:WALK_MS/4);if(tok!==renderTok||!peeking)return}
- ov.innerHTML=blueprintHTML();snd('scan');flash('good');
+ ov.innerHTML=blueprintHTML();snd('scan');flash('good');if($('pinIt'))$('pinIt').onclick=()=>{me.pinned=true;saveMe();snd('power');peeking=false};
  for(let s=PEEK_SECS;s>0;s--){if(tok!==renderTok||!peeking||phase(PS)!=='build')break;const t=$('pkT'),bar=$('pkBar');if(t)t.textContent=s;if(bar){bar.style.transition='none';bar.style.transform='scaleX('+(s/PEEK_SECS)+')';void bar.offsetWidth;bar.style.transition='transform 1s linear';bar.style.transform='scaleX('+((s-1)/PEEK_SECS)+')'}
   ov.classList.toggle('last',s<=2);if(s<=3)snd('tick10');await sleep(1000)}
- snd('shutter');ov.className='peek hide';ov.innerHTML='';peeking=false;if(tok===renderTok){flash('bad');const ta=$('cin');if(ta)ta.focus()}}
+ snd('shutter');ov.className='peek hide';ov.innerHTML='';peeking=false;if(tok===renderTok){flash('bad');renderPin();const ta=$('cin');if(ta)ta.focus()}}
 /* builder: paint */
 function wireBuilder(){
  const bd=$('board');if(!bd)return;let painting=false,lastI=-1,lastSnd=0;
@@ -906,6 +915,7 @@ function resultsHTML(S,meT,limit){const rk=ranked(S),medals=['🥇','🥈','🥉
  return '<div class="rank r'+i+(o.t===meT?' me':'')+'" style="animation-delay:'+Math.min(i,8)*90+'ms"><div class="tinfo">'+miniHTML(o.res.board,70)+'<div><strong>'+(medals[i]||(i+1)+'.')+' '+tm.ic+' '+esc(LT(tm.n))+(o.t===meT?' ← '+L('YOUR TEAM','فريقك'):'')+'</strong><div class="mem">👁 '+esc(m?m.name:'?')+' · 🧱 '+esc(R.bids.map(nameOf).join('، '))+'</div></div></div><span>★ '+o.res.score+' <span class="acc2">&nbsp;'+o.res.acc+'%</span></span></div>'}).join('')+(ins?'<div class="note insight">💡 '+esc(ins)+'</div>':'')}
 function renderRankOverlay(){$('rankRows').innerHTML=PS&&PS.round?resultsHTML(PS,me.team):'<p class="muted">'+L('No results yet','لا توجد نتائج بعد')+'</p>'}
 function openRank(){renderRankOverlay();$('rankOverlay').classList.remove('hide');snd('reveal');if(PS&&PS.round){const i=ranked(PS).findIndex(o=>o.t===me.team);if(i===0)setTimeout(()=>confetti(160),400)}}
+function exitGame(){clearTimeout(sendTimer);if(PS&&me.id&&!(PS.round))send({type:'leave'});store.del('hb_me');if(PS){sessStop(PS);PS=null}musStop();vignette(false);peeking=false;$('peek').classList.add('hide');$('rankOverlay').classList.add('hide');splashHide();me=emptyMe();view('intro');checkResume();updateHUD();toast(L('You left the game','خرجت من اللعبة'))}
 /* ---------- backup / resume / start ---------- */
 function download(name,content,type){const blob=new Blob([content],{type}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
 function backup(){const res=PS&&PS.round?teamResult(PS,me.team):null;download('hidden-build-'+(me.name||'player').replace(/[^\w-]/g,'_')+'.json',JSON.stringify({v:1,type:'backup',session:me.code,id:me.id,name:me.name,team:me.team,role:myRole(),style:me.style,clarity:me.clarity,refl:me.refl,accuracy:res?res.acc:null,score:res?res.score:null},null,2),'application/json')}
@@ -956,7 +966,7 @@ function renderTrainer(){
  const list=plist(S).sort(byJoin),ph=roundDone(S)?'ended':phase(S),pl=[0,1,2,3].filter(t=>playable(S,t));
  countTo($('playerCount'),list.length,400);countTo($('readyCount'),S.round?Object.values(S.round.roster).filter(R=>R.mid&&R.bids.length).length:pl.length,400);renderTrainerTimer();
  $('revealBtn').classList.toggle('hide',S.reveal);$('hideBtn').classList.toggle('hide',!S.reveal);
- $('shapeSel').disabled=$('timeSel').disabled=!!S.round;$('startBtn').disabled=!!S.round;$('startBtn').classList.toggle('hide',!!S.round&&ph!=='wait');$('endRoundBtn').classList.toggle('hide',!(S.round&&ph!=='ended'));
+ $('shapeSel').disabled=$('timeSel').disabled=$('pinSel').disabled=!!S.round;$('startBtn').disabled=!!S.round;$('startBtn').classList.toggle('hide',!!S.round&&ph!=='wait');$('endRoundBtn').classList.toggle('hide',!(S.round&&ph!=='ended'));
  $('readyRow').innerHTML=TEAMS.map((tm,t)=>{const m=effMessenger(S,t),n=teamMembers(S,t).length,ok=playable(S,t);return '<span class="rdy '+(ok?'ok':n?'warn':'')+'">'+tm.ic+' '+esc(LT(tm.n))+': '+(ok?'✅ 👁1 · 🧱'+(n-1):n?'⚠ '+(m?L('no Builder','بلا Builder'):L('no Messenger','بلا Messenger')):'—')+'</span>'}).join('');
  $('teamCards').innerHTML=TEAMS.map((_,t)=>teamCardHTML(S,t)).join('');
  /* players table */
@@ -977,7 +987,7 @@ function renderProj(){
  const S=cur();if(!S)return;$('projCode').textContent=S.code;$('projUrl').textContent=baseURL().replace(/^https?:\/\//,'').replace(/^file:\/\/\/?/,'');
  const ph=roundDone(S)?'ended':phase(S);$('projJoinBox').classList.toggle('hide',ph==='build'||ph==='count'||(ph==='ended'));let h='';
  if(ph==='wait'){h='<div class="projteams">'+TEAMS.map((tm,t)=>{const mem=teamMembers(S,t),m=effMessenger(S,t);return '<div class="tcard" style="--tc:'+tm.c+'"><h4><span>'+tm.ic+' '+esc(LT(tm.n))+'</span><span>👥 '+mem.length+'</span></h4>'+(mem.map(p=>{const isNew=!S.seenProj.has(p.id);S.seenProj.add(p.id);return '<div class="'+(isNew?'pop':'')+'">'+(m&&m.id===p.id?'<b style="color:var(--gold)">👁 '+esc(p.name)+'</b>':'🧱 '+esc(p.name))+'</div>'}).join('')||'<span class="muted">—</span>')+'</div>'}).join('')+'</div>'}
- else if(ph==='count'||ph==='build'){const rem=buildEnd(S)-nowMs();h='<div class="projtimer'+(ph==='build'&&rem<=10000?' crit':'')+'">'+(ph==='count'?L('GET READY','استعدوا'):fmtT(rem))+'</div><div class="projteams">'+TEAMS.map((tm,t)=>{const st=teamStats(S,t);if(!st||!st.res)return '';const r=st.res,tf=target(S).replace(/\./g,'').length,R=S.round.roster[t],lk=R.bids.filter((_,z)=>S.parts[t+':'+z]&&S.parts[t+':'+z].lock).length;return '<div class="tcard" style="--tc:'+tm.c+'"><h4><span>'+tm.ic+' '+esc(LT(tm.n))+'</span><span>🔒 '+lk+'/'+R.bids.length+'</span></h4><div class="accbar" style="height:16px"><i style="width:'+Math.min(100,Math.round(r.placed/tf*100))+'%"></i></div><div class="small muted" style="margin-top:6px">💬 '+st.msgs+'</div></div>'}).join('')+'</div>'}
+ else if(ph==='count'||ph==='build'){const rem=buildEnd(S)-nowMs();h='<div class="projtimer'+(ph==='build'&&rem<=10000?' crit':'')+'">'+(ph==='count'?L('GET READY','استعدوا'):fmtT(rem))+'</div><div class="projteams">'+TEAMS.map((tm,t)=>{const st=teamStats(S,t);if(!st||!st.res)return '';const r=st.res,tf=target(S).replace(/\./g,'').length,R=S.round.roster[t],lk=R.bids.filter((_,z)=>S.parts[t+':'+z]&&S.parts[t+':'+z].lock).length;const pc=Math.min(100,Math.round(r.placed/tf*100));return '<div class="tcard" style="--tc:'+tm.c+'"><h4><span>'+tm.ic+' '+esc(LT(tm.n))+'</span><span>🔒 '+lk+'/'+R.bids.length+'</span></h4><div class="projprog"><div class="accbar big"><i style="width:'+pc+'%;background:'+tm.c+'"></i></div><b>'+pc+'%</b></div><div class="small muted" style="margin-top:6px">💬 '+st.msgs+' · 🧱 '+r.placed+'/'+tf+'</div>'+(S.projShow?'<div style="margin-top:10px">'+miniHTML(r.board,170)+'</div>':'')+'</div>'}).join('')+'</div>'}
  else{ if(S.reveal)h='<h2 style="font-size:clamp(26px,4vw,48px)">'+tt('ranking')+'</h2><div class="projrank">'+resultsHTML(S,-1,10)+'</div>';
   else{const sh=SHAPES[S.round.shape];h='<h2 style="font-size:clamp(26px,4vw,48px)">'+L('ROUND OVER','انتهت الجولة')+'</h2><div class="projbp"><div><div class="small muted">'+L('THE BLUEPRINT','المخطط')+' · '+sh.ic+' '+esc(LT(sh.n))+'</div>'+miniHTML(target(S),220)+'</div>'+ranked(S).map(o=>'<div><div class="small">'+TEAMS[o.t].ic+' '+esc(LT(TEAMS[o.t].n))+'</div>'+miniHTML(o.res.board,150)+'</div>').join('')+'</div>'}}
  $('projBody').innerHTML=h}
@@ -1009,11 +1019,13 @@ $('trainerBtn').onclick=openTrainer;$('backBtn').onclick=()=>view('intro');
 const unlock=()=>{if($('pinInput').value===PIN){TR.unlocked=true;snd('win');openTrainer()}else{snd('err');toast(L('Wrong access code','كود خاطئ'))}};
 $('pinBtn').onclick=unlock;$('pinInput').onkeydown=e=>{if(e.key==='Enter')unlock()};
 $('copyLink').onclick=()=>{const S=cur();if(S)copyText(joinURL(S.code))};$('copyArabic').onclick=()=>{const S=cur();if(S)copyText(joinURL(S.code,'ar'))};
+$('projShowBtn').onclick=()=>{const S=cur();if(!S)return;S.projShow=!S.projShow;$('projShowBtn').classList.toggle('on',!!S.projShow);snd('tap');renderProj()};
+$('exitBtn').dataset.i='exit';arm($('exitBtn'),exitGame);
 $('projBtn').onclick=openProj;$('projClose').onclick=()=>$('proj').classList.add('hide');
 arm($('resetBtn'),()=>resetSession(TR.active));arm($('closeBtn'),()=>closeSession(TR.active));
 $('labelInput').oninput=e=>{const S=cur();if(S){S.label=e.target.value.slice(0,30);persist();renderTabs()}};
 $('startBtn').onclick=()=>{const S=cur();if(!S||S.round)return;if(![0,1,2,3].some(t=>playable(S,t))){snd('err');toast(L('No team has both a Messenger and a Builder yet.','لا يوجد فريق فيه Messenger وBuilder بعد.'));return}
- const v=$('shapeSel').value,shape=v==='r'?Math.floor(Math.random()*SHAPES.length):+v,secs=+$('timeSel').value;publish(S,{type:'start',shape,secs});$('startBtn').disabled=true;snd('go');toast(L('Starting the round…','جارٍ بدء الجولة…'))};
+ const v=$('shapeSel').value,shape=v==='r'?Math.floor(Math.random()*SHAPES.length):+v,secs=+$('timeSel').value;publish(S,{type:'start',shape,secs,pin:+$('pinSel').value});$('startBtn').disabled=true;snd('go');toast(L('Starting the round…','جارٍ بدء الجولة…'))};
 arm($('endRoundBtn'),()=>{const S=cur();if(S&&S.round)publish(S,{type:'endround'})});
 $('revealBtn').onclick=()=>{const S=cur();if(!S)return;S.reveal=true;publish(S,{type:'reveal',show:true});toast(L('Leaderboard revealed to players','تم إظهار الترتيب للمشاركين'));snd('reveal');renderTrainer();if(!$('proj').classList.contains('hide'))renderProj()};
 $('hideBtn').onclick=()=>{const S=cur();if(!S)return;S.reveal=false;publish(S,{type:'reveal',show:false});renderTrainer();if(!$('proj').classList.contains('hide'))renderProj()};

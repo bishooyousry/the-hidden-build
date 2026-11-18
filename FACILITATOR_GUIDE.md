@@ -7,10 +7,14 @@
 ## Setup
 Share the link. Four teams (colours). First to tap "I'll be the Messenger" is the Messenger. Everyone else builds. No screenshots, no notes. Players may also talk on a call.
 
+## Pin or no pin?
+Recommended: **Off**. The Messenger having to go back and remember is what makes the whole-picture question visible. Turn it On for a first, gentler round or for time-boxed sessions; it removes the memory pressure, so expect smaller gaps between teams.
+
 ## Run
 1. Press START ROUND. Do not hint that the whole picture matters.
 2. Open the **Teams** cards and read the transcripts live. Notice (as in the classroom version): did the Messenger give the whole picture first or start with details? Was the wording clear or ambiguous? How did Builders react to each other?
-3. When teams finish (or press END ROUND NOW), reveal the leaderboard and use the projector view.
+3. On the projector view press SHOW BUILDS to let the room watch each team's drawing grow (progress bars are always shown).
+4. When teams finish (or press END ROUND NOW), reveal the leaderboard and use the projector view.
 
 ## Debrief
 - What are the guidelines for cascading a goal so everyone can act on it?

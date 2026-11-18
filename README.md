@@ -10,8 +10,13 @@ Single-file HTML game (`index.html`). Teams of one **Messenger** (sees the secre
 ## Run a session
 1. Open the page → **Trainer Dashboard** → PIN `2026` (hides the UI only, not real security).
 2. Copy the player link (or the Arabic link) and share it. Players enter a name, pick a style and a team; the first to tap "I'll be the Messenger" is the Messenger.
-3. Check the ready row, pick the blueprint (or Random) and the time, press **START ROUND**.
+3. Check the ready row, pick the blueprint (or Random), the time and **Messenger pin** (Off by default), press **START ROUND**.
 4. After the round: **Reveal leaderboard**, projector view, CSV export.
+
+## Exit, pin, projector
+- **⏏ EXIT** (top right, tap twice): leaves the game. In the lobby the player disappears from the team; during a round the team keeps waiting for that Builder's lock (or the timer).
+- **Messenger pin** (trainer option, default Off): when On, the peek screen shows a "Pin it to my screen" button and the blueprint stays small on the Messenger's screen until unpinned. Off keeps the original "memory only" rule.
+- **Projector view:** during the round each team gets a live progress bar (% of blueprint bricks placed, locks). The **SHOW BUILDS** button (top left) adds each team's current drawing (updates every ~10 s). After the round it shows the blueprint and the teams' builds, scores after Reveal.
 
 ## Scoring
 Accuracy = correct bricks / (blueprint bricks + stray bricks), as %. Team score = accuracy × 10 + time bonus (0–100, only if every builder locked early AND accuracy ≥ 50%). Max < 1100. Everyone on the team gets the team score.
