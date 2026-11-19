@@ -334,6 +334,14 @@ select{background:#0c1930;color:#fff;border:1px solid #496389;border-radius:10px
 .projshow{position:fixed;top:14px;inset-inline-start:14px;z-index:2}.projshow.on{border-color:var(--mint);background:#123c3c}
 #exitBtn.danger{background:#4a2424}
 
+.teamsel{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:6px}
+.tpick{border:2px solid #2b4168;border-top:6px solid var(--tc);border-radius:12px;padding:12px 6px;background:#0f1d38;color:var(--white);font-weight:800;letter-spacing:.06em;line-height:1.5;transition:transform .12s,box-shadow .2s}
+.tpick:hover:not(:disabled){transform:translateY(-3px)}
+.tpick.sel{border-color:var(--tc);background:color-mix(in srgb,var(--tc) 16%,#0f1d38);box-shadow:0 0 0 3px color-mix(in srgb,var(--tc) 35%,transparent),0 0 22px color-mix(in srgb,var(--tc) 40%,transparent)}
+.switchrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.tpick.sm{padding:8px 12px;border-top-width:2px;font-size:13px}
+#chatToggle{width:100%;text-align:start}
+@media(max-width:560px){.teamsel{grid-template-columns:repeat(2,1fr)}}
+
 </style></head><body>
 <canvas id="bg" aria-hidden="true"></canvas><div class="labbg" aria-hidden="true"></div><div class="scan" aria-hidden="true"></div>
 <div class="app" id="app">
@@ -350,6 +358,7 @@ select{background:#0c1930;color:#fff;border:1px solid #496389;border-radius:10px
 <input id="playerName" maxlength="48" autocomplete="name" placeholder="Full name">
 <label for="joinCode" data-i="session">SESSION CODE</label>
 <input id="joinCode" class="codeinput" maxlength="400" spellcheck="false" autocomplete="off" autocapitalize="characters" placeholder="•••••">
+<label data-i="pickTeam">YOUR TEAM</label><div class="teamsel" id="introTeams" role="group"></div>
 <p class="small muted" data-i="joinInfo"></p>
 <div class="row" style="margin-top:20px"><button class="primary" id="joinBtn" data-i="start">JOIN</button><button class="btn" id="trainerBtn" data-i="trainer">TRAINER DASHBOARD</button></div>
 <p class="small muted" id="joinStatus"></p>
@@ -384,7 +393,7 @@ select{background:#0c1930;color:#fff;border:1px solid #496389;border-radius:10px
 <h3 style="margin-top:22px" data-i="teamsTitle">TEAMS (LIVE)</h3><div class="teamcards" id="teamCards"></div>
 <h3 style="margin-top:22px" data-i="coverage">DEBRIEF PANEL</h3><div class="note hide" id="insight"></div><div class="small muted" id="covLegend"></div><div class="acc" id="covBars"></div>
 <details class="guide"><summary data-i="guide">FACILITATOR GUIDE</summary><div id="guideBox"></div></details>
-<details class="guide"><summary data-i="playersTable">PLAYERS TABLE</summary><div class="results"><table><thead><tr><th data-i="player">Player</th><th data-i="teamCol">Team</th><th data-i="roleCol">Role</th><th data-i="styleCol">Style</th><th data-i="bricksCol">Bricks</th><th data-i="clarityCol">Clarity</th><th></th></tr></thead><tbody id="playerRows"></tbody></table></div></details>
+<details class="guide"><summary data-i="playersTable">PLAYERS TABLE</summary><div class="results"><table><thead><tr><th data-i="player">Player</th><th data-i="teamCol">Team</th><th data-i="roleCol">Role</th><th data-i="bricksCol">Bricks</th><th data-i="clarityCol">Clarity</th><th></th></tr></thead><tbody id="playerRows"></tbody></table></div></details>
 <div style="margin-top:22px"><h3 data-i="importTitle">BACKUP: IMPORT PLAYER RESULTS</h3><input id="importFile" type="file" accept=".json,application/json" multiple><p class="small muted" data-i="importHelp"></p></div>
 </div></div>
 </section>
@@ -565,7 +574,7 @@ function teamStats(S,t){const r=S.round,R=r&&r.roster[t];if(!R||!R.mid)return nu
  mm.forEach((c,i)=>{if(!named&&namesPicture(S,c.text))named={t:Math.max(0,c.t-bs),first:i===0}});
  const cl=R.bids.map(id=>S.players.get(id)).filter(p=>p&&p.clarity).map(p=>p.clarity),mp=S.players.get(R.mid);
  return{msgs:msgs.length,mMsgs:mm.length,bMsgs:msgs.length-mm.length,named,peeks:S.peeks.filter(p=>p.team===t).length,firstMsgT:mm[0]?Math.max(0,mm[0].t-bs):null,clB:cl.length?cl.reduce((a,b)=>a+b,0)/cl.length:0,clM:mp&&mp.clarity||0,mStyle:mp?mp.style:-1,res:teamResult(S,t)}}
-function insightText(S){const rows=[];for(let t=0;t<NTEAMS;t++){const s=teamStats(S,t);if(s&&s.res&&s.res.board.replace(/\./g,'').length)rows.push(s)}
+function insightText(S){const rows=[];for(let t=0;t<NTEAMS;t++){const s=teamStats(S,t);if(s&&s.res&&s.msgs>0&&s.res.board.replace(/\./g,'').length)rows.push(s)}
  if(!rows.length)return null;const A=rows.filter(s=>s.named&&s.named.first),B=rows.filter(s=>!(s.named&&s.named.first)),avg=a=>Math.round(a.reduce((n,s)=>n+s.res.acc,0)/a.length);
  if(A.length&&B.length)return L('Teams whose Messenger named the whole picture in the very first message averaged '+avg(A)+'% accuracy. The other teams averaged '+avg(B)+'%. (keyword check on the chat)','الفرق التي ذكر فيها الـ Messenger الصورة الكاملة في أول رسالة حققت متوسط دقة '+avg(A)+'٪، أما باقي الفرق فمتوسطها '+avg(B)+'٪. (فحص بالكلمات المفتاحية على الشات)');
  if(A.length)return L('Every team named the whole picture in the first message (average accuracy '+avg(A)+'%).','كل الفرق ذكرت الصورة الكاملة في أول رسالة (متوسط الدقة '+avg(A)+'٪).');
@@ -636,7 +645,7 @@ const T={
 intro:['A secret brick build is hidden behind the curtain. One Messenger can see it. The Builders cannot. Can your team rebuild it exactly?','مجسّم سري مخفي خلف الستارة. واحد فقط (الـ Messenger) يستطيع رؤيته، والـ Builders لا يرونه. هل يستطيع فريقك إعادة بنائه تمامًا؟'],
 pillA:['🧱 TEAM GAME','🧱 لعبة فرق'],pillB:['⏱ ~6 MINUTES','⏱ حوالي ٦ دقائق'],pillC:['🏆 LIVE LEADERBOARD','🏆 ترتيب مباشر'],
 name:['YOUR NAME','اسمك'],session:['SESSION CODE','كود السيشن'],
-joinInfo:['This is a team game: open your trainer’s link or type the 5-character session code.','هذه لعبة فرق: افتح رابط المدرب أو اكتب كود السيشن (٥ خانات).'],
+joinInfo:['Type your name, the room code from your trainer and pick your team. That’s all.','اكتب اسمك وكود الروم من المدرب واختر فريقك. هذا كل شيء.'],
 start:['JOIN THE BUILD ➜','انضم للبناء ←'],trainer:['TRAINER DASHBOARD','لوحة تحكم المدرب'],resume:['RESUME','متابعة'],startOver:['START OVER','ابدأ من جديد'],
 back:['BACK','رجوع'],pin:['FACILITATOR ACCESS CODE','كود دخول المدرب'],unlock:['UNLOCK CONSOLE','فتح لوحة التحكم'],
 pinWarning:['This code only hides the interface; it is not real security. The public relay is not confidential.','هذا الكود يخفي الواجهة فقط وليس حماية حقيقية. الوسيط العام ليس سريًا.'],
@@ -653,7 +662,7 @@ ranking:['🏆 TEAM LEADERBOARD','🏆 ترتيب الفرق'],rankingNote:['Ran
 codeLabel:['SESSION CODE','كود السيشن'],sessName:['SESSION NAME (optional)','اسم السيشن (اختياري)'],playerLink:['PLAYER LINK','رابط المشاركين'],
 project:['📽 PROJECTOR VIEW','📽 عرض البروجكتر'],resetSess:['↻ RESET SESSION','↻ إعادة ضبط السيشن'],closeSess:['✕ CLOSE SESSION','✕ إغلاق السيشن'],
 coverage:['DEBRIEF PANEL','لوحة النقاش'],guide:['FACILITATOR GUIDE (timing & debrief)','دليل المدرب (التوقيت والنقاش)'],
-projJoin:['JOIN AT','ادخل على'],exit:['⏏ EXIT','⏏ خروج'],pinLbl:['MESSENGER PIN','تثبيت المخطط'],pinOff:['Off (memory only)','متوقف (بالذاكرة فقط)'],pinOn:['On (Messenger can pin)','مفعّل (يثبّت الـ Messenger المخطط)'],projShow:['👁 SHOW BUILDS','👁 إظهار رسومات الفرق'],noSession:['No session yet. Press “+ NEW SESSION”.','لا توجد سيشنات. اضغط «+ سيشن جديد».']};
+projJoin:['JOIN AT','ادخل على'],exit:['⏏ EXIT','⏏ خروج'],pickTeam:['YOUR TEAM','فريقك'],pinLbl:['MESSENGER PIN','تثبيت المخطط'],pinOff:['Off (memory only)','متوقف (بالذاكرة فقط)'],pinOn:['On (Messenger can pin)','مفعّل (يثبّت الـ Messenger المخطط)'],projShow:['👁 SHOW BUILDS','👁 إظهار رسومات الفرق'],noSession:['No session yet. Press “+ NEW SESSION”.','لا توجد سيشنات. اضغط «+ سيشن جديد».']};
 const tt=k=>T[k]?T[k][IDX()]:k;
 const STAGES=[['TEAM UP','كوّنوا الفريق'],['BUILD','البناء'],['REVEAL','الكشف']];
 const RULES=[['👁',['Only the Messenger can see the blueprint, as often as needed.','الـ Messenger وحده يرى المخطط، بقدر ما يحتاج.']],['🧱',['Each Builder builds one part of the picture and never sees the blueprint.','كل Builder يبني جزءًا واحدًا من الصورة ولا يرى المخطط أبدًا.']],['💬',['Talk in the team chat (or on your call). No screenshots, no notes.','تواصلوا في شات الفريق (أو في المكالمة). ممنوع التصوير والملاحظات.']],['⏱',['One round. The trainer starts the clock for every team at once.','جولة واحدة. المدرب يبدأ العدّاد لكل الفرق في نفس اللحظة.']]];
@@ -661,16 +670,16 @@ const QUICK=[['❓ What are we building?','❓ ماذا نبني؟'],['🔁 Plea
 const CLARITY=['😵','😕','😐','🙂','🤩'];
 const GUIDE=[
 ['⏱ Timing (about 15 min with debrief): intro 1 min · team-up 1–2 min · round 4 min · reveal + debrief 7–8 min.','⏱ التوقيت (حوالي ١٥ دقيقة مع النقاش): مقدمة دقيقة · تكوين الفرق ١–٢ دقيقة · الجولة ٤ دقائق · الكشف والنقاش ٧–٨ دقائق.'],
-['1. Share the player link. Ask each team to pick a colour; the first person who taps “I’ll be the Messenger” becomes the Messenger (one per team). Everyone else is a Builder.','١. شارك رابط المشاركين. كل فريق يختار لونًا؛ أول من يضغط «أنا الـ Messenger» يصبح الـ Messenger (واحد لكل فريق) والباقي Builders.'],
+['1. Share the room code or link. Each player types a name and picks a team colour (put each breakout room on one colour). In every team the first person who taps “I’ll be the Messenger” becomes the Messenger; everyone else is a Builder and bricks are split between the Builders only.','١. شارك كود الروم أو الرابط. كل مشارك يكتب اسمه ويختار لون فريقه (خصّص لون لكل بريك أوت روم). في كل فريق أول من يضغط «أنا الـ Messenger» يصبح الـ Messenger والباقي Builders، وتُقسَّم المكعبات على الـ Builders فقط.'],
 ['2. Check the “ready” row, pick the blueprint (or leave Random) and press START ROUND. Do NOT hint that the whole picture matters — let it emerge.','٢. راجع صف «الجاهزية»، اختر المخطط (أو اتركه عشوائيًا) واضغط ابدأ الجولة. لا تلمّح أن الصورة الكاملة مهمة — دعها تظهر بنفسها.'],
-['3. While they build, open the TEAMS cards and read the chat. Notice (as in the classroom version): did the Messenger give the whole picture first, or start with details? Is the wording clear or ambiguous? How do Builders react to each other?','٣. أثناء البناء افتح بطاقات الفرق واقرأ الشات. لاحظ (كما في النسخة الصفية): هل بدأ الـ Messenger بالصورة الكاملة أم بالتفاصيل؟ هل الكلام واضح أم غامض؟ وكيف يتفاعل الـ Builders مع بعضهم؟'],
+['3. While they build, follow the progress bars and visit the breakout rooms. Notice (as in the classroom version): did the Messenger give the whole picture first, or start with details? Is the wording clear or ambiguous? How do Builders react to each other? (The in-game chat is optional; the keyword check and transcripts only exist for teams that used it.)','٣. أثناء البناء تابع أشرطة التقدّم وزُر البريك أوت رومز. لاحظ (كما في النسخة الصفية): هل بدأ الـ Messenger بالصورة الكاملة أم بالتفاصيل؟ هل الكلام واضح أم غامض؟ وكيف يتفاعل الـ Builders؟ (الشات داخل اللعبة اختياري، وفحص الكلمات والمحادثات موجودان فقط للفرق التي استخدمته.)'],
 ['4. After the round press REVEAL LEADERBOARD (and use the projector view). The insight line compares teams that named the whole picture first with the rest (keyword check: read the transcripts too).','٤. بعد الجولة اضغط إظهار الترتيب (واستخدم عرض البروجكتر). سطر الملاحظة يقارن الفرق التي ذكرت الصورة الكاملة أولًا بالباقي (فحص بالكلمات المفتاحية: اقرأ المحادثات أيضًا).'],
 ['Debrief — reflect on: (a) the guidelines for cascading goals, (b) why it matters to cascade the full picture, (c) the challenge of different personalities and behavioural styles in teams. Use the clarity gap (Messenger’s rating vs Builders’ rating) and the style chips (self-picked, not an assessment).','النقاش — تأملوا في: (أ) إرشادات نقل الأهداف، (ب) لماذا من المهم نقل الصورة الكاملة، (ج) تحدي اختلاف الشخصيات وأساليب السلوك داخل الفرق. استخدم فجوة الوضوح (تقييم الـ Messenger مقابل تقييم الـ Builders) وشارات الأسلوب (اختيار ذاتي وليست تقييمًا).']];
 const DEBRIEF_Q=[['What are the guidelines for cascading a goal so everyone can act on it?','ما إرشادات نقل الهدف بحيث يستطيع الجميع التصرف بناءً عليه؟'],['Why did (or didn’t) the full picture come first? What changed once Builders knew what they were building?','لماذا (أو لماذا لم) تأتِ الصورة الكاملة أولًا؟ وماذا تغيّر عندما عرف الـ Builders ما الذي يبنونه؟'],['How did different personalities and styles shape how the Messenger described it and how Builders reacted?','كيف أثّرت اختلافات الشخصيات والأساليب على طريقة وصف الـ Messenger وردود فعل الـ Builders؟']];
 
 /* ===== GAME LOGIC: THE HIDDEN BUILD — stage 1 team up · stage 2 build (Messenger / Builder) · stage 3 reveal ===== */
 let PS=null,busy=false,renderTok=0,peeking=false,finishing=false,sendTimer=0,lastSec=-1,skipAsm=false,asmDone=false;
-const emptyMe=()=>({name:'',id:'',code:'',stage:1,team:-1,role:'b',mAt:0,style:-1,tool:'R',part:'',peeks:0,locked:false,sentAt:0,clarity:0,refl:'',saved:false,asmSeen:false,doneSent:false,pinned:false});
+const emptyMe=()=>({name:'',id:'',code:'',stage:1,team:-1,role:'b',mAt:0,style:-1,tool:'R',part:'',peeks:0,locked:false,sentAt:0,clarity:0,refl:'',saved:false,asmSeen:false,doneSent:false,pinned:false,chatOpen:false,chatSeen:0});
 let me=emptyMe();
 const saveMe=()=>store.set('hb_me',JSON.stringify(me));
 const nameOf=id=>{const p=PS&&PS.players.get(id);return p?p.name:'?'};
@@ -727,32 +736,30 @@ function miniHTML(str,w){return '<div class="mini" style="--w:'+(w||120)+'px">'+
 function chipBtn(cls,sel,label,data){return '<button type="button" class="'+cls+(sel?' sel':'')+'" aria-pressed="'+(sel?'true':'false')+'" '+data+'>'+label+'</button>'}
 /* ---------- stage 1: team up ---------- */
 const roundOn=()=>!!(PS&&PS.round);
+let introTeam=-1;
+function renderIntroTeams(){const box=$('introTeams');if(!box)return;box.innerHTML=TEAMS.map((tm,t)=>'<button type="button" class="tpick'+(introTeam===t?' sel':'')+'" data-t="'+t+'" aria-pressed="'+(introTeam===t)+'" style="--tc:'+tm.c+'">'+tm.ic+'<br>'+esc(LT(tm.n))+'</button>').join('');box.querySelectorAll('.tpick').forEach(el=>el.onclick=()=>{introTeam=+el.dataset.t;store.set('hb_team',String(introTeam));snd('select');renderIntroTeams()})}
 function renderS1(){
  musStart('lobby');
- $('stageBox').innerHTML='<div class="panel brief"><div class="eyebrow">'+L('MISSION','المهمة')+'</div><h2 style="margin:6px 0">'+L('Rebuild the secret build','أعيدوا بناء المجسّم السري')+'</h2><div class="rules">'+RULES.map((r,i)=>'<div class="rule" style="animation-delay:'+i*90+'ms"><b>'+r[0]+'</b><span>'+esc(LT(r[1]))+'</span></div>').join('')+'</div></div>'+
- '<div class="panel" style="margin-top:14px"><div class="eyebrow">1 · '+L('YOUR STYLE WHEN BRIEFING OTHERS','أسلوبك عند شرح مهمة للآخرين')+'</div><div class="chips stylechips" id="styles" style="margin-top:8px">'+STYLES.map((s,i)=>chipBtn('chip2',me.style===i,'<span style="font-size:22px">'+s.ic+'</span><span><b>'+esc(LT(s.n))+'</b><small>'+esc(LT(s.d))+'</small></span>','data-s="'+i+'" style="--c:#51ebcf"')).join('')+'</div><p class="small muted">'+L('Quick self-pick for the debrief. It is not a personality assessment.','اختيار سريع للنقاش فقط، وليس تقييمًا للشخصية.')+'</p>'+
- '<div class="eyebrow" style="margin-top:14px">2 · '+L('PICK YOUR TEAM','اختر فريقك')+'</div><div class="tiles" id="tiles"></div><div id="roleBox" style="margin-top:12px"></div><div class="waitbar" id="waitBar"></div></div>';
- $('styles').querySelectorAll('.chip2').forEach(el=>el.onclick=()=>{me.style=+el.dataset.s;saveMe();snd('select');if(me.team>=0)sendJoin();$('styles').querySelectorAll('.chip2').forEach(e=>{const on=+e.dataset.s===me.style;e.classList.toggle('sel',on);e.setAttribute('aria-pressed',on)});renderTeamsLive()});
+ $('stageBox').innerHTML='<div class="panel" id="lobbyPanel"><div class="eyebrow">'+L('WAITING ROOM','غرفة الانتظار')+'</div><div id="myTeam"></div><div id="roleBox" style="margin-top:12px"></div><div class="waitbar" id="waitBar"></div><div class="eyebrow" style="margin-top:16px">'+L('WRONG TEAM? SWITCH','فريق خاطئ؟ غيّره')+'</div><div class="switchrow" id="switchRow"></div></div>'+
+ '<details class="guide" style="margin-top:12px"><summary>'+L('How it works','إزاي اللعبة بتشتغل')+'</summary><div class="rules">'+RULES.map(r=>'<div class="rule"><b>'+r[0]+'</b><span>'+esc(LT(r[1]))+'</span></div>').join('')+'</div></details>';
  renderTeamsLive()}
 function sendJoin(){send({type:'join',team:me.team,role:me.role,mAt:me.mAt,style:me.style})}
 function teamCount(t){return PS?teamMembers(PS,t).length:0}
 function renderTeamsLive(){
- if(me.stage!==1||!$('tiles'))return;
- const locked=roundOn(),ready=me.style>=0;
- $('tiles').innerHTML=TEAMS.map((tm,t)=>{const mem=PS?teamMembers(PS,t):[],m=PS?effMessenger(PS,t):null;
-  return '<button type="button" class="tile'+(me.team===t?' mine':'')+'" data-t="'+t+'" style="--tc:'+tm.c+'"'+(locked||!ready?' disabled':'')+'><div class="cnt">👥 '+mem.length+'/'+MAXTEAM+'</div><h3>'+tm.ic+' '+esc(LT(tm.n))+'</h3><div class="who">'+(mem.length?mem.map(p=>'<span class="'+(m&&m.id===p.id?'m':'')+'">'+(m&&m.id===p.id?'👁 ':'🧱 ')+esc(p.name)+(p.id===me.id?' ← '+L('YOU','أنت'):'')+(p.style>=0?' '+STYLES[p.style].ic:'')+'</span>').join(''):'<span class="nobody">'+L('Nobody yet','لا أحد بعد')+'</span>')+'</div></button>'}).join('');
- $('tiles').querySelectorAll('.tile').forEach(el=>el.onclick=()=>pickTeam(+el.dataset.t));
- const m=me.team>=0&&PS?effMessenger(PS,me.team):null,iAmM=m&&m.id===me.id;let rb='';
- if(!ready)rb='<div class="hint2">'+L('Pick your style first, then your team.','اختر أسلوبك أولًا ثم فريقك.')+'</div>';
- else if(me.team<0)rb='<div class="hint2">'+L('Tap a team to join it.','اضغط على فريق للانضمام إليه.')+'</div>';
- else if(iAmM)rb='<div class="row"><span class="pill" style="border-color:var(--gold);color:var(--gold)">👁 '+L('You are the Messenger of your team','أنت الـ Messenger في فريقك')+'</span><button class="btn" id="relM"'+(roundOn()?' disabled':'')+'>'+L('Give it up','تنازل عن الدور')+'</button></div>';
- else if(m)rb='<div class="hint2">'+L('Your team’s Messenger is ','الـ Messenger في فريقك هو ')+'<b>'+esc(m.name)+'</b>. '+L('You are a Builder 🧱','أنت Builder 🧱')+'</div>';
- else rb='<div class="row"><button class="primary gold" id="claimM"'+(roundOn()?' disabled':'')+'>👁 '+L('I’LL BE THE MESSENGER','أنا الـ MESSENGER')+'</button><span class="small muted">'+L('Or just wait: everyone else is a Builder 🧱','أو انتظر: الباقي Builders 🧱')+'</span></div>';
+ if(me.stage!==1||!$('myTeam'))return;
+ const locked=roundOn(),t=me.team,tm=TEAMS[t]||TEAMS[0],mem=PS&&t>=0?teamMembers(PS,t):[],m=PS&&t>=0?effMessenger(PS,t):null,iAmM=!!m&&m.id===me.id;
+ $('myTeam').innerHTML='<div class="tile mine" style="--tc:'+tm.c+'"><div class="cnt">👥 '+mem.length+'/'+MAXTEAM+'</div><h3>'+tm.ic+' '+esc(LT(tm.n))+' '+L('TEAM','فريق')+'</h3><div class="who">'+mem.map(p=>'<span class="'+(m&&m.id===p.id?'m':'')+'">'+(m&&m.id===p.id?'👁 ':'🧱 ')+esc(p.name)+(p.id===me.id?' ← '+L('YOU','أنت'):'')+'</span>').join('')+'</div></div>';
+ let rb='';
+ if(iAmM)rb='<div class="hint2">👁 <b>'+L('You are the Messenger.','أنت الـ Messenger.')+'</b> '+L('You will see the blueprint and tell your team what to build. Your Builders cannot see it.','سترى المخطط وتشرح لفريقك ما يجب بناؤه. الـ Builders لا يرونه.')+'</div><div class="row" style="margin-top:8px"><button class="btn" id="relM"'+(locked?' disabled':'')+'>'+L('Give it up','تنازل عن الدور')+'</button></div>';
+ else if(m)rb='<div class="hint2">🧱 <b>'+L('You are a Builder.','أنت Builder.')+'</b> '+L('Your Messenger is ','الـ Messenger عندكم هو ')+'<b>'+esc(m.name)+'</b>. '+L('They will explain what to build; you will place the bricks for one part of the picture.','سيشرح لكم ما يجب بناؤه وستضع المكعبات في جزء من الصورة.')+'</div>';
+ else rb='<div class="row"><button class="primary gold pulse-btn" id="claimM"'+(locked?' disabled':'')+'>👁 '+L('I’LL BE THE MESSENGER','أنا الـ MESSENGER')+'</button></div><p class="small muted" style="margin:8px 0 0">'+L('The first person to tap becomes the one who sees the picture and guides the team. Everyone else is a Builder 🧱.','أول من يضغط يصبح من يرى الصورة ويوجّه الفريق. الباقي Builders 🧱.')+'</p>';
  $('roleBox').innerHTML=rb;if($('claimM'))$('claimM').onclick=claimMessenger;if($('relM'))$('relM').onclick=()=>{me.role='b';me.mAt=0;saveMe();sendJoin();snd('deselect');renderTeamsLive()};
- const ready2=PS?[0,1,2,3].filter(t=>playable(PS,t)).length:0;
- $('waitBar').innerHTML='<div class="stack"><i class="c-R"></i><i class="c-Y"></i><i class="c-B"></i></div><span>'+(roundOn()&&!inRoster(PS,me.id)?L('The round started without you. You can watch the result.','بدأت الجولة بدونك. يمكنك مشاهدة النتيجة.'):L('Waiting for the trainer to start the round… teams ready: ','بانتظار المدرب ليبدأ الجولة… الفرق الجاهزة: ')+ready2)+'</span>'+(roundOn()&&!inRoster(PS,me.id)?'<button class="btn" id="watchBtn" style="margin-inline-start:auto">'+L('WATCH','شاهد')+'</button>':'');
+ $('switchRow').innerHTML=TEAMS.map((x,i)=>i===t?'':'<button type="button" class="tpick sm" data-t="'+i+'" style="--tc:'+x.c+'"'+(locked?' disabled':'')+'>'+x.ic+' '+esc(LT(x.n))+' · '+teamCount(i)+'</button>').join('');
+ $('switchRow').querySelectorAll('.tpick').forEach(el=>el.onclick=()=>pickTeam(+el.dataset.t));
+ const ready2=PS?[0,1,2,3].filter(k=>playable(PS,k)).length:0,spec=roundOn()&&!inRoster(PS,me.id);
+ $('waitBar').innerHTML='<div class="stack"><i class="c-R"></i><i class="c-Y"></i><i class="c-B"></i></div><span>'+(spec?L('The round started without you. You can watch the result.','بدأت الجولة بدونك. يمكنك مشاهدة النتيجة.'):L('Waiting for the trainer to start the round… teams ready: ','بانتظار المدرب ليبدأ الجولة… الفرق الجاهزة: ')+ready2)+'</span>'+(spec?'<button class="btn" id="watchBtn" style="margin-inline-start:auto">'+L('WATCH','شاهد')+'</button>':'');
  if($('watchBtn'))$('watchBtn').onclick=()=>goStage(3)}
-function pickTeam(t){if(roundOn()||me.style<0||me.team===t)return;if(teamCount(t)>=MAXTEAM){snd('err');toast(L('This team is full','هذا الفريق مكتمل'));return}
+function pickTeam(t){if(roundOn()||me.team===t)return;if(teamCount(t)>=MAXTEAM){snd('err');toast(L('This team is full','هذا الفريق مكتمل'));return}
  me.team=t;me.role='b';me.mAt=0;saveMe();sendJoin();snd('select');setTimeout(()=>snd('connect'),90);renderTeamsLive();updateHUD()}
 function claimMessenger(){if(roundOn()||me.team<0)return;const m=effMessenger(PS,me.team);if(m&&m.id!==me.id){snd('err');toast(L('Messenger already taken by ','الـ Messenger محجوز بواسطة ')+m.name);return}
  me.role='m';me.mAt=nowMs();saveMe();sendJoin();snd('power');flash('good');confetti(40,undefined,undefined,[TEAMS[me.team].c,'#ffd36f']);renderTeamsLive();updateHUD();
@@ -775,7 +782,7 @@ async function countdown(tok){
  splashShow('',L('BUILD!','ابنُوا!'),'','gob go');snd('go');flash('good');confetti(140);shakeApp();await sleep(750);splashHide();updateTimer()}
 function topbar(role){const tm=TEAMS[me.team],R=myRoster(),z=myZone();return '<div class="row between" style="margin-bottom:6px"><div><div class="eyebrow" style="color:'+tm.c+'">'+tm.ic+' '+esc(LT(tm.n))+' · '+(role==='m'?'👁 MESSENGER':'🧱 BUILDER · '+esc(zoneName(R.bids.length,z)))+'</div></div></div>'}
 function messengerHTML(){
- return '<div class="buildgrid"><div class="panel bpanel">'+topbar('m')+'<h2 style="margin:4px 0">'+L('You hold the secret','أنت تحمل السر')+'</h2><p class="muted" style="line-height:1.6;margin:4px 0">'+L('Only you can see the blueprint. Your Builders are waiting. Tell them what they need to build.','أنت وحدك ترى المخطط، وفريق الـ Builders ينتظرك. أخبرهم بما عليهم بناؤه.')+'</p>'+
+ return '<div class="buildgrid"><div class="panel bpanel">'+topbar('m')+'<h2 style="margin:4px 0">'+L('You hold the secret','أنت تحمل السر')+'</h2><p class="muted" style="line-height:1.6;margin:4px 0">'+L('Only you can see the blueprint. Your Builders are waiting: guide them out loud in your room (or use the optional chat).','أنت وحدك ترى المخطط والـ Builders ينتظرونك: وجّههم بصوتك في الروم (أو استخدم الشات الاختياري).')+'</p>'+
  '<button class="primary gold peekbtn pulse-btn" id="peekBtn">🚶 '+L('GO CHECK THE BLUEPRINT','اذهب لرؤية المخطط')+'</button><div class="small muted" id="peekInfo"></div><div id="pinBox"></div><div class="rosterbox" id="rosterBox"></div><div class="hint2">'+L('Builders each own a column range, labelled in the blueprint. No screenshots, no notes.','لكل Builder نطاق أعمدة يظهر مسمّى في المخطط. ممنوع التصوير والملاحظات.')+'</div></div>'+chatPanelHTML(false)+'</div>'}
 function builderHTML(){
  const R=myRoster(),z=myZone(),zr=zoneRanges(R.bids.length),{x0,w}=zr[z];
@@ -785,7 +792,7 @@ function builderHTML(){
  return '<div class="buildgrid"><div class="panel bpanel">'+topbar('b')+'<div class="row between"><b style="color:'+ZC[z]+'">'+L('YOUR PART','جزؤك')+' · '+esc(zoneName(R.bids.length,z))+'</b><span class="small muted" id="placed"></span></div>'+b+
  '<div class="pal" id="pal">'+PAL.map(p=>'<button type="button" class="sw c-'+p[0]+(me.tool===p[0]?' sel':'')+'" data-c="'+p[0]+'" aria-label="'+p[1]+'"></button>').join('')+'<button type="button" class="sw eraser'+(me.tool==='.'?' sel':'')+'" data-c="." aria-label="Eraser">🧽</button></div>'+
  '<div class="tools"><button class="btn" id="clearBtn"'+(me.locked?' disabled':'')+'>'+L('CLEAR PART','مسح الجزء')+'</button><button class="primary" id="lockBtn"'+(me.locked?' disabled':'')+'>'+(me.locked?'🔒 '+L('LOCKED','تم القفل'):'🔒 '+L('LOCK MY PART','اقفل جزئي'))+'</button></div><div class="rosterbox" id="rosterBox" style="margin-top:12px"></div></div>'+chatPanelHTML(true)+'</div>'}
-function chatPanelHTML(builder){return '<div class="panel chatpanel"><div class="eyebrow">💬 '+L('TEAM CHAT','شات الفريق')+'</div><div class="msgs" id="msgs" aria-live="polite"></div>'+(builder?'<div class="qchips" id="qchips">'+QUICK.map((q,i)=>'<button type="button" class="chip2" data-q="'+i+'" style="--c:#51ebcf">'+esc(LT(q))+'</button>').join('')+'</div>':'')+'<div class="composer"><textarea id="cin" dir="auto" maxlength="240" rows="1" placeholder="'+(builder?L('Ask or confirm…','اسأل أو أكّد…'):L('Describe what you saw…','صف ما رأيته…'))+'"></textarea><button class="primary" id="csend" aria-label="Send">➤</button></div><div class="small muted">'+L('You can also talk on your call. The chat helps your trainer follow along.','يمكنكم أيضًا التحدث في المكالمة. الشات يساعد المدرب على المتابعة.')+'</div></div>'}
+function chatPanelHTML(builder){return '<div class="panel chatpanel"><button type="button" class="btn" id="chatToggle" aria-expanded="'+(!!me.chatOpen)+'"></button><div id="chatBody" class="'+(me.chatOpen?'':'hide')+'"><div class="msgs" id="msgs" aria-live="polite"></div>'+(builder?'<div class="qchips" id="qchips">'+QUICK.map((q,i)=>'<button type="button" class="chip2" data-q="'+i+'" style="--c:#51ebcf">'+esc(LT(q))+'</button>').join('')+'</div>':'')+'<div class="composer"><textarea id="cin" dir="auto" maxlength="240" rows="1" placeholder="'+(builder?L('Ask or confirm…','اسأل أو أكّد…'):L('Describe what you saw…','صف ما رأيته…'))+'"></textarea><button class="primary" id="csend" aria-label="Send">➤</button></div><div class="small muted">'+L('Optional: most teams just talk in their breakout room.','اختياري: معظم الفرق تتحدث في البريك أوت روم.')+'</div></div></div>'}
 function renderRosterMini(){
  const box=$('rosterBox');if(!box||me.stage!==2||!PS||!PS.round)return;const R=myRoster();if(!R)return;const zr=zoneRanges(R.bids.length);
  box.innerHTML=R.bids.map((id,z)=>{const p=PS.parts[me.team+':'+z],n=p?p.cells.replace(/\./g,'').length:0;return '<div class="rrow" style="--z:'+ZC[z]+'"><b>'+esc(nameOf(id))+(id===me.id?' ← '+L('YOU','أنت'):'')+'</b><small>'+esc(zoneName(R.bids.length,z))+' · '+L('cols ','أعمدة ')+(zr[z].x0+1)+'–'+(zr[z].x0+zr[z].w)+'</small><span>'+(p&&p.lock?'🔒':'🧱 '+n)+'</span></div>'}).join('');
@@ -793,11 +800,12 @@ function renderRosterMini(){
  if($('placed')){const n=me.part.replace(/\./g,'').length;$('placed').textContent='🧱 '+n}}
 /* chat */
 let chatCount=0;
-function renderChat(){const box=$('msgs');if(!box||!PS)return;const list=PS.chat.filter(c=>c.team===me.team);
+function chatLabel(list){const others=list.filter(c=>c.id!==me.id).length;if(me.chatOpen)me.chatSeen=others;const un=me.chatOpen?0:Math.max(0,others-(me.chatSeen||0));const t=$('chatToggle');if(t)t.innerHTML='💬 '+L('Team chat (optional)','شات الفريق (اختياري)')+(un?' · <b style="color:var(--gold)">'+un+' '+L('new','جديد')+'</b>':'')+(me.chatOpen?' ▴':' ▾')}
+function renderChat(){const box=$('msgs');if(!box||!PS)return;const list=PS.chat.filter(c=>c.team===me.team);chatLabel(list);
  if(list.length===chatCount&&box.dataset.l===lang)return;chatCount=list.length;box.dataset.l=lang;const near=box.scrollHeight-box.scrollTop-box.clientHeight<80;
  box.innerHTML=list.length?list.map(c=>'<div class="msg '+c.role+(c.id===me.id?' me':'')+'"><small>'+(c.role==='m'?'👁 ':'🧱 ')+esc(c.name)+' · '+fmtT(c.t-buildStart(PS))+'</small><span dir="auto">'+esc(c.text)+'</span></div>').join(''):'<div class="empty">'+L('No messages yet.','لا توجد رسائل بعد.')+'</div>';
  if(near||list.length<3)box.scrollTop=box.scrollHeight}
-function wireChat(){chatCount=-1;const inp=$('cin');if(!inp)return;const go=()=>{sendChat(inp.value);inp.value=''};$('csend').onclick=go;inp.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();go()}};
+function wireChat(){chatCount=-1;const tg=$('chatToggle');if(tg)tg.onclick=()=>{me.chatOpen=!me.chatOpen;saveMe();$('chatBody').classList.toggle('hide',!me.chatOpen);tg.setAttribute('aria-expanded',!!me.chatOpen);chatCount=-1;renderChat();if(me.chatOpen){const b=$('msgs');if(b)b.scrollTop=b.scrollHeight}};const inp=$('cin');if(!inp)return;const go=()=>{sendChat(inp.value);inp.value=''};$('csend').onclick=go;inp.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();go()}};
  document.querySelectorAll('#qchips .chip2').forEach(el=>el.onclick=()=>sendChat(LT(QUICK[+el.dataset.q]).replace(/^\S+\s/,'')))}
 function sendChat(text){text=String(text||'').trim().slice(0,240);if(!text)return;if(phase(PS)!=='build'){snd('err');toast(L('Chat opens when the clock starts','الشات يفتح عند بدء العدّاد'));return}
  send({type:'chat',team:me.team,text,cid:rand().slice(0,10)});snd('send');renderChat()}
@@ -903,7 +911,7 @@ function paintStats(res,anim){
  $('bigstat').innerHTML='<div class="card"><div class="small muted">'+L('ACCURACY','الدقة')+'</div><strong><span id="stAcc">0</span>%</strong></div><div class="card"><div class="small muted">'+L('TIME BONUS','مكافأة الوقت')+'</div><strong>+'+res.bonus+'</strong></div><div class="card" style="border-color:var(--gold)"><div class="small muted">'+L('TEAM SCORE','نقاط الفريق')+'</div><strong id="stScore2">0</strong></div>';
  countTo($('stAcc'),res.acc,anim?1100:1);countTo($('stScore2'),res.score,anim?1400:1);
  const s=teamStats(PS,me.team);
- $('story').innerHTML=s?'<div>⏱ '+L('First message from your Messenger: ','أول رسالة من الـ Messenger: ')+(s.firstMsgT==null?L('none','لا توجد'):fmtT(s.firstMsgT))+'</div><div>🖼 '+L('Whole picture named: ','ذكر الصورة الكاملة: ')+(s.named?(s.named.first?L('in the very first message ✅','في أول رسالة ✅'):L('later, at ','لاحقًا، عند ')+fmtT(s.named.t)):L('never ❌','لم يحدث ❌'))+' <span class="small muted">('+L('keyword check','فحص بالكلمات المفتاحية')+')</span></div><div>💬 '+L('Messages: Messenger ','الرسائل: الـ Messenger ')+s.mMsgs+' · Builders '+s.bMsgs+' · 👁 '+L('peeks ','مرات الرؤية ')+s.peeks+'</div><div>🧱 '+res.ok+'/'+res.tf+L(' bricks in the right place','  مكعبًا في مكانه الصحيح')+(res.stray?' · '+L('extra bricks: ','مكعبات زائدة: ')+res.stray:'')+'</div>':''}
+ $('story').innerHTML=s?((s.msgs?'<div>⏱ '+L('First message from your Messenger: ','أول رسالة من الـ Messenger: ')+(s.firstMsgT==null?L('none','لا توجد'):fmtT(s.firstMsgT))+'</div><div>🖼 '+L('Whole picture named: ','ذكر الصورة الكاملة: ')+(s.named?(s.named.first?L('in the very first message ✅','في أول رسالة ✅'):L('later, at ','لاحقًا، عند ')+fmtT(s.named.t)):L('never ❌','لم يحدث ❌'))+' <span class="small muted">('+L('keyword check','فحص بالكلمات المفتاحية')+')</span></div><div>💬 '+L('Messages: Messenger ','الرسائل: الـ Messenger ')+s.mMsgs+' · Builders '+s.bMsgs+' · 👁 '+L('peeks ','مرات الرؤية ')+s.peeks+'</div>':'')+'<div>🧱 '+res.ok+'/'+res.tf+L(' bricks in the right place','  مكعبًا في مكانه الصحيح')+(res.stray?' · '+L('extra bricks: ','مكعبات زائدة: ')+res.stray:'')+'</div>'):''}
 function liveResult(){if(!$('bWrap')||!asmDone)return;const res=teamResult(PS,me.team);if(!res)return;markCompare(res);paintStats(res,false);updateHUD()}
 function renderSpectator(){$('stageBox').innerHTML='<div class="panel hero6"><div class="eyebrow">'+L('WATCHING','مشاهدة')+'</div><h1>'+L('The round is on','الجولة جارية')+'</h1><p class="muted">'+L('You joined after the round started, or your team had no Messenger or Builder. The teams’ results appear here when the round ends.','انضممت بعد بدء الجولة، أو لم يكن في فريقك Messenger أو Builder. ستظهر نتائج الفرق هنا عند انتهاء الجولة.')+'</p><div id="specBox"></div><div class="row" style="margin-top:14px"><button class="btn" id="againBtn">'+L('BACK TO START','العودة للبداية')+'</button></div></div>';
  $('againBtn').onclick=()=>{store.del('hb_me');if(PS){sessStop(PS);PS=null}musStop();me=emptyMe();view('intro');checkResume();updateHUD()};liveSpectator()}
@@ -926,7 +934,8 @@ async function startPlay(){
  if(name.length<2){toast(L('Enter a name of at least 2 characters','اكتب اسمًا من حرفين على الأقل'));snd('err');return}
  const raw=$('joinCode').value.trim(),code=parseCode(raw);
  if(!code){toast(L('This is a team game: enter the 5-character session code from your trainer.','هذه لعبة فرق: اكتب كود السيشن (٥ خانات) من مدربك.'));snd('err');return}
- busy=true;actx();musBus();me=emptyMe();me.name=name;me.id=rand();me.code=code;bindPS();saveMe();
+ if(introTeam<0){toast(L('Pick your team','اختر فريقك'));snd('err');return}
+ busy=true;actx();musBus();me=emptyMe();me.name=name;me.id=rand();me.code=code;me.team=introTeam;bindPS();saveMe();
  snd('join');view('game');busy=false;ensureLive();sendJoin();renderStage()}
 
 /* ---------- trainer ---------- */
@@ -954,7 +963,7 @@ function teamCardHTML(S,t){
  if(!R){if(!m&&mem.length)h+='<div class="small" style="color:#ffe9a8;margin-top:6px">⚠ '+L('no Messenger yet','لا يوجد Messenger بعد')+'</div>';else if(m&&mem.length<2)h+='<div class="small" style="color:#ffe9a8;margin-top:6px">⚠ '+L('no Builders yet','لا يوجد Builders بعد')+'</div>';else if(m)h+='<div class="small" style="color:var(--mint);margin-top:6px">✅ '+L('ready','جاهز')+'</div>'}
  else if(!R.mid||!R.bids.length)h+='<div class="small" style="color:#ffe9a8;margin-top:6px">⚠ '+L('did not start (needs a Messenger and a Builder)','لم يبدأ (يحتاج Messenger وBuilder)')+'</div>';
  else{const tf=target(S).replace(/\./g,'').length,pc=Math.min(100,Math.round(res.placed/tf*100)),lk=R.bids.filter((_,z)=>S.parts[t+':'+z]&&S.parts[t+':'+z].lock).length;
-  h+='<div class="accrow" style="grid-template-columns:1fr 80px;margin-top:8px"><div class="accbar"><i style="width:'+pc+'%"></i></div><span class="small">🧱 '+res.placed+'/'+tf+'</span></div><div class="small muted" style="margin-top:4px">🔒 '+lk+'/'+R.bids.length+' · 💬 '+st.msgs+' · 👁 '+st.peeks+' · 🖼 '+(st.named?(st.named.first?L('named first','ذُكرت أولًا'):L('named at ','ذُكرت عند ')+fmtT(st.named.t)):L('not named','لم تُذكر'))+'</div>';
+  h+='<div class="accrow" style="grid-template-columns:1fr 80px;margin-top:8px"><div class="accbar"><i style="width:'+pc+'%"></i></div><span class="small">🧱 '+res.placed+'/'+tf+'</span></div><div class="small muted" style="margin-top:4px">🔒 '+lk+'/'+R.bids.length+' · 💬 '+st.msgs+' · 👁 '+st.peeks+' · 🖼 '+(!st.msgs?'—':st.named?(st.named.first?L('named first','ذُكرت أولًا'):L('named at ','ذُكرت عند ')+fmtT(st.named.t)):L('not named','لم تُذكر'))+'</div>';
   const chat=S.chat.filter(c=>c.team===t);
   h+='<details><summary>💬 '+L('Transcript','المحادثة')+' ('+chat.length+')</summary><div class="tr-chat" dir="auto">'+(chat.length?chat.map(c=>'<p class="'+c.role+'"><span class="t">'+fmtT(c.t-buildStart(S))+'</span> '+(c.role==='m'?'👁':'🧱')+' <b>'+esc(c.name)+'</b>: '+esc(c.text)+'</p>').join(''):'<span class="muted">—</span>')+'</div></details>'}
  return h+'</div>'}
@@ -971,14 +980,14 @@ function renderTrainer(){
  $('teamCards').innerHTML=TEAMS.map((_,t)=>teamCardHTML(S,t)).join('');
  /* players table */
  let rows='';list.forEach((p,i)=>{const fl=S.flash.has(p.id),op=S.open.has(p.id),r=S.round,R=r&&p.team>=0?r.roster[p.team]:null,role=R?(R.mid===p.id?'👁':R.bids.includes(p.id)?'🧱':'—'):(p.role==='m'?'👁':'🧱');
-  rows+='<tr'+(fl?' class="rowflash"':'')+'><td><b>'+(i+1)+'.</b> '+esc(p.name)+'</td><td>'+(p.team>=0?TEAMS[p.team].ic+' '+esc(LT(TEAMS[p.team].n)):'—')+'</td><td>'+role+'</td><td>'+(p.style>=0?STYLES[p.style].ic+' '+esc(LT(STYLES[p.style].n)):'—')+'</td><td>'+(r?bricksOf(S,p):'—')+'</td><td>'+(p.clarity?CLARITY[p.clarity-1]:'—')+'</td><td><button class="btn xs" data-open="'+esc(p.id)+'" aria-expanded="'+op+'">'+(op?'⌃':'⌄')+'</button></td></tr>';
+  rows+='<tr'+(fl?' class="rowflash"':'')+'><td><b>'+(i+1)+'.</b> '+esc(p.name)+'</td><td>'+(p.team>=0?TEAMS[p.team].ic+' '+esc(LT(TEAMS[p.team].n)):'—')+'</td><td>'+role+'</td><td>'+(r?bricksOf(S,p):'—')+'</td><td>'+(p.clarity?CLARITY[p.clarity-1]:'—')+'</td><td><button class="btn xs" data-open="'+esc(p.id)+'" aria-expanded="'+op+'">'+(op?'⌃':'⌄')+'</button></td></tr>';
   if(op)rows+='<tr class="detail"><td colspan="7"><div class="detbox" style="grid-template-columns:1fr"><div><h4>'+L('REFLECTION','التأمل')+'</h4><pre dir="auto">'+esc(p.refl||'—')+'</pre></div></div></td></tr>'});
  $('playerRows').innerHTML=rows||'<tr><td colspan="7" class="muted">'+L('Waiting for players to join… share the code above.','في انتظار انضمام المشاركين… شارك الكود بالأعلى.')+'</td></tr>';
  $('playerRows').querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{const id=b.dataset.open;if(S.open.has(id))S.open.delete(id);else S.open.add(id);renderTrainer()});
  if(S.flash.size)setTimeout(()=>S.flash.clear(),1300);
  /* debrief panel */
  let cv='';for(let t=0;t<NTEAMS;t++){const st=S.round?teamStats(S,t):null;if(!st||!st.res)continue;const tm=TEAMS[t],r=st.res;
-  cv+='<div class="covrow" style="--c:'+tm.c+';grid-template-columns:130px 1fr 250px"><b>'+tm.ic+' '+esc(LT(tm.n))+'</b><div class="covbars"><div class="accbar"><i style="width:'+r.acc+'%"></i></div></div><span class="small">'+r.acc+'% · 🖼 '+(st.named?(st.named.first?L('first msg','أول رسالة'):fmtT(st.named.t)):'✗')+' · 👁 '+st.peeks+' · '+(st.mStyle>=0?STYLES[st.mStyle].ic+' ':'')+L('clarity ','وضوح ')+(st.clM?CLARITY[st.clM-1]:'–')+' / '+(st.clB?CLARITY[Math.round(st.clB)-1]:'–')+'</span></div>'}
+  cv+='<div class="covrow" style="--c:'+tm.c+';grid-template-columns:130px 1fr 250px"><b>'+tm.ic+' '+esc(LT(tm.n))+'</b><div class="covbars"><div class="accbar"><i style="width:'+r.acc+'%"></i></div></div><span class="small">'+r.acc+'% · 🖼 '+(!st.msgs?'—':st.named?(st.named.first?L('first msg','أول رسالة'):fmtT(st.named.t)):'✗')+' · 👁 '+st.peeks+' · '+(st.mStyle>=0?STYLES[st.mStyle].ic+' ':'')+L('clarity ','وضوح ')+(st.clM?CLARITY[st.clM-1]:'–')+' / '+(st.clB?CLARITY[Math.round(st.clB)-1]:'–')+'</span></div>'}
  $('covBars').innerHTML=cv||'<p class="muted">'+L('Appears after the round starts.','تظهر بعد بدء الجولة.')+'</p>';
  $('covLegend').textContent=L('Accuracy per team · 🖼 when the Messenger named the whole picture (keyword check; read the transcript too) · clarity: Messenger’s self-rating / Builders’ average (the perception gap).','الدقة لكل فريق · 🖼 متى ذكر الـ Messenger الصورة الكاملة (فحص بالكلمات؛ اقرأ المحادثة أيضًا) · الوضوح: تقييم الـ Messenger لنفسه / متوسط الـ Builders (فجوة الإدراك).');
  const ins=S.round?insightText(S):null;$('insight').classList.toggle('hide',!ins);$('insight').textContent=ins?'💡 '+ins:'';
@@ -1000,7 +1009,7 @@ function csv(){const S=cur();if(!S)return;
 /* ---------- language ---------- */
 function setLang(v){lang=v==='ar'?'ar':'en';document.documentElement.lang=lang;document.body.dir=lang==='ar'?'rtl':'ltr';$('langBtn').textContent=lang==='ar'?'English':'العربية';
  document.querySelectorAll('[data-i]').forEach(e=>{e.textContent=tt(e.dataset.i)});
- $('playerName').placeholder=L('Full name','الاسم الكامل');$('labelInput').placeholder=L('e.g. Group A','مثال: المجموعة أ');fillShapeSel();
+ $('playerName').placeholder=L('Full name','الاسم الكامل');$('labelInput').placeholder=L('e.g. Group A','مثال: المجموعة أ');fillShapeSel();renderIntroTeams();
  store.set('hb_lang',lang);showNet();
  if(mode==='game'){chatCount=-1;renderStage()}if(mode==='trainer')renderTrainer();
  if(!$('rankOverlay').classList.contains('hide'))renderRankOverlay();if(!$('proj').classList.contains('hide'))renderProj();checkResume()}
@@ -1047,6 +1056,7 @@ setInterval(()=>{try{renderTrainerTimer();if(!$('proj').classList.contains('hide
  (function f(){x.clearRect(0,0,w,h);for(const p of P){p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;if(p.y<-20){p.y=h+20;p.x=Math.random()*w}x.save();x.translate(p.x,p.y);x.rotate(p.r);x.globalAlpha=.2;x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s);x.globalAlpha=.35;x.beginPath();x.arc(0,0,p.s*.22,0,7);x.fill();x.restore()}requestAnimationFrame(f)})()})();
 /* ---------- boot ---------- */
 (()=>{const q=new URLSearchParams(location.search);soundOn=store.get('hb_sound')!=='off';$('soundBtn').textContent=soundOn?'🔊':'🔇';MUS.on=store.get('hb_music')!=='off';$('musicBtn').style.opacity=MUS.on?1:.45;
+ introTeam=Math.max(-1,Math.min(NTEAMS-1,parseInt(store.get('hb_team')||'-1',10)||-1));
  setLang(q.get('lang')||store.get('hb_lang')||'en');
  const sp=(q.get('session')||'').toUpperCase();
  if(sp){if(validCode(sp)){$('joinCode').value=sp;$('joinStatus').textContent=L('Session '+sp+' detected. Enter your name and join.','تم التعرف على السيشن '+sp+'. اكتب اسمك وانضم.')}else $('joinStatus').textContent=L('This link has an old or invalid code. Ask your trainer for the new link.','هذا الرابط يحتوي على كود قديم أو غير صحيح. اطلب الرابط الجديد من المدرب.')}

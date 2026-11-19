@@ -9,9 +9,15 @@ Single-file HTML game (`index.html`). Teams of one **Messenger** (sees the secre
 
 ## Run a session
 1. Open the page → **Trainer Dashboard** → PIN `2026` (hides the UI only, not real security).
-2. Copy the player link (or the Arabic link) and share it. Players enter a name, pick a style and a team; the first to tap "I'll be the Messenger" is the Messenger.
+2. Share the player link (or just the 5-character room code). Each player types **name + room code + picks a team colour** on one screen (one colour per breakout room works well). In every team the first person to tap "I'll be the Messenger" sees the blueprint and guides the team; everyone else is a Builder.
 3. Check the ready row, pick the blueprint (or Random), the time and **Messenger pin** (Off by default), press **START ROUND**.
 4. After the round: **Reveal leaderboard**, projector view, CSV export.
+
+## How bricks are split
+The Messenger never builds. The 9 columns are divided between the Builders only (1 Builder: whole board, 2: 5+4, 3: 3+3+3, 4: 3+2+2+2, 5: 2+2+2+2+1). Players can switch team in the waiting room before the round starts.
+
+## Chat is optional
+Online trainings usually use breakout rooms, so the Messenger can simply talk. The in-game team chat is collapsed by default ("Team chat (optional)", with a new-message counter). The "picture named" keyword check and transcripts only exist for teams that used it; otherwise they show "—".
 
 ## Exit, pin, projector
 - **⏏ EXIT** (top right, tap twice): leaves the game. In the lobby the player disappears from the team; during a round the team keeps waiting for that Builder's lock (or the timer).
