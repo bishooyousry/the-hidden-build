@@ -1,6 +1,14 @@
-# The Hidden Build — Skills Bank team game
+# The Hidden Build: executive edition (Skills Bank team activity for managers)
 
-Single-file HTML game (`index.html`). Teams of one **Messenger** (sees the secret brick blueprint) and **Builders** (each builds one part, never sees it). Parts are assembled and compared with the blueprint. Bilingual EN/AR, sounds + procedural music, live trainer console.
+Same activity, same rules, same scoring as the original Hidden Build, with a calmer look for managers and a Saudi Arabic edition. English and Arabic, RTL.
+
+## What changed in this edition
+- **Look and feel:** light, professional layout in the official Skills Bank palette (navy, soft blue, cyan, orange, red). Flat tiles instead of toy bricks; no neon, scan lines, bobbing bricks or walking emoji; calm countdown, softer effects, and the blueprint viewer is a plain navy screen. Team colours and brick colours use the palette (red, blue, green, yellow, white).
+- **Arabic first:** the activity opens in Arabic by default (the `?lang=en` link or the language button switches to English). The Arabic is formal business Arabic with Saudi-friendly wording: **الجلسة** (not "سيشن"), **رمز الجلسة**, **غرف المجموعات**, **المحادثة**, **سيارة**, **منزل**; roles are **الناقل** (Messenger) and **البنّاؤون** (Builders). Digits are Western (0-9).
+- **Cultural fit:** the Tree blueprint is now a **Palm Tree** (نخلة). Decorative emojis were removed. Sound effects stay quiet and **music is Off by default** (breakout rooms need voices); the ♪ button turns it on.
+- **Unchanged:** teams, roles, blueprint, chat, scoring, projector, debrief panel, CSV, import backup, resume, all behaviours (52 automated checks pass).
+
+Single-file HTML activity (`index.html`). Teams of one **Messenger** (sees the secret brick blueprint) and **Builders** (each builds one part, never sees it). Parts are assembled and compared with the blueprint. Bilingual EN/AR, sounds + procedural music, live trainer console.
 
 ## Publish (GitHub Pages)
 1. Create a repo, upload `index.html` and `.nojekyll` to the root.
@@ -8,7 +16,7 @@ Single-file HTML game (`index.html`). Teams of one **Messenger** (sees the secre
 3. Open the published URL (do **not** use a preview/artifact viewer: it blocks the network).
 
 ## Run a session
-1. Open the page → **Trainer Dashboard** → PIN `2026` (hides the UI only, not real security).
+1. Open the page → **Trainer Dashboard** → access code `2026` (hides the UI only, not real security).
 2. Share the player link (or just the 5-character room code). Each player types **name + room code + picks a team colour** on one screen (one colour per breakout room works well). In every team the first person to tap "I'll be the Messenger" sees the blueprint and guides the team; everyone else is a Builder.
 3. Check the ready row, pick the blueprint (or Random), the time and **Messenger pin** (Off by default), press **START ROUND**.
 4. After the round: **Reveal leaderboard**, projector view, CSV export.

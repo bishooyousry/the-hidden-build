@@ -1,3 +1,5 @@
+> **Executive edition note.** This guide describes the same activity. In this edition the interface opens in Arabic by default, the roles are called **Messenger / الناقل** and **Builders / البنّاؤون**, the look is the light Skills Bank theme, music is Off by default, and the Tree blueprint is a Palm Tree. Everything else below is unchanged.
+
 # Facilitator guide — The Hidden Build (~15 min)
 
 **Learning goal:** cascading goals — share the full picture, not only details; notice how personalities and styles change how a goal is passed on.
