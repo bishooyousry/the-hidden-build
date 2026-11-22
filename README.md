@@ -1,50 +1,35 @@
-# The Hidden Build: executive edition (Skills Bank team activity for managers)
+# The Hidden Build · Future City (Leadership Mission)
 
-Same activity, same rules, same scoring as the original Hidden Build, with a calmer look for managers and a Saudi Arabic edition. English and Arabic, RTL.
+A premium, futuristic edition of the Skills Bank team activity **The Hidden Build** for senior managers and executives, in English and Arabic (RTL). It keeps every mechanic of the original (Messenger and Builders, secret blueprint, zones, chat, locks, scoring, trainer dashboard, projector, CSV, resume, relay) and changes the experience around it.
 
-## What changed in this edition
-- **Look and feel:** light, professional layout in the official Skills Bank palette (navy, soft blue, cyan, orange, red). Flat tiles instead of toy bricks; no neon, scan lines, bobbing bricks or walking emoji; calm countdown, softer effects, and the blueprint viewer is a plain navy screen. Team colours and brick colours use the palette (red, blue, green, yellow, white).
-- **Arabic first:** the activity opens in Arabic by default (the `?lang=en` link or the language button switches to English). The Arabic is formal business Arabic with Saudi-friendly wording: **الجلسة** (not "سيشن"), **رمز الجلسة**, **غرف المجموعات**, **المحادثة**, **سيارة**, **منزل**; roles are **الناقل** (Messenger) and **البنّاؤون** (Builders). Digits are Western (0-9).
-- **Cultural fit:** the Tree blueprint is now a **Palm Tree** (نخلة). Decorative emojis were removed. Sound effects stay quiet and **music is Off by default** (breakout rooms need voices); the ♪ button turns it on.
-- **Unchanged:** teams, roles, blueprint, chat, scoring, projector, debrief panel, CSV, import backup, resume, all behaviours (52 automated checks pass).
+Single file: `index.html`. No frameworks, no external images, no external fonts. All visuals are CSS, SVG and Canvas.
 
-Single-file HTML activity (`index.html`). Teams of one **Messenger** (sees the secret brick blueprint) and **Builders** (each builds one part, never sees it). Parts are assembled and compared with the blueprint. Bilingual EN/AR, sounds + procedural music, live trainer console.
+## The idea
+Teams are given one mission: rebuild a classified section of a future smart city. One **Messenger** (mission controller) sees the blueprint. The **Builders** (construction crew) never do, and each builds only their own zone. Parts are combined and compared with the original in a final reveal.
 
-## Publish (GitHub Pages)
-1. Create a repo, upload `index.html` and `.nojekyll` to the root.
-2. Settings → Pages → Deploy from branch → `main` / root.
-3. Open the published URL (do **not** use a preview/artifact viewer: it blocks the network).
+## Publish on GitHub Pages
+1. Create a repository and upload `index.html` and `.nojekyll` to the root.
+2. Settings > Pages > Deploy from branch > `main` / root.
+3. Open the published address (not a preview viewer: it blocks the network).
+4. Optional: add `?lang=en` to open in English. The default language is Arabic.
 
 ## Run a session
-1. Open the page → **Trainer Dashboard** → access code `2026` (hides the UI only, not real security).
-2. Share the player link (or just the 5-character room code). Each player types **name + room code + picks a team colour** on one screen (one colour per breakout room works well). In every team the first person to tap "I'll be the Messenger" sees the blueprint and guides the team; everyone else is a Builder.
-3. Check the ready row, pick the blueprint (or Random), the time and **Messenger pin** (Off by default), press **START ROUND**.
-4. After the round: **Reveal leaderboard**, projector view, CSV export.
+1. Open the page > **Trainer dashboard** > access code `2026` (hides the interface only).
+2. Share the player link or the 5-character session code. Each player enters name + code and picks a team on one screen (one team colour per breakout room works well).
+3. In every team the first person to tap **I'm the Messenger** becomes the Messenger; everyone else is a Builder.
+4. Choose the blueprint (or Random), the round time and the Messenger pin option (Off by default), then press **START ROUND**.
+5. Use the **Projector view** for the live city, **SHOW BUILDS** for each team's current structure, then **Reveal leaderboard** for the staged final reveal.
 
-## How bricks are split
-The Messenger never builds. The 9 columns are divided between the Builders only (1 Builder: whole board, 2: 5+4, 3: 3+3+3, 4: 3+2+2+2, 5: 2+2+2+2+1). Players can switch team in the waiting room before the round starts.
+## Blueprints (9 x 7, five materials)
+Smart City Core · Executive Headquarters · Strategy Bridge · Digital Command Center · Connected Network · Customer Experience Hub. Materials: coral (R), blue (B), orange (Y), cyan (G), white (W).
 
-## Chat is optional
-Online trainings usually use breakout rooms, so the Messenger can simply talk. The in-game team chat is collapsed by default ("Team chat (optional)", with a new-message counter). The "picture named" keyword check and transcripts only exist for teams that used it; otherwise they show "—".
+## What is new
+Look and feel only, plus the Future City story: cinematic skyline background, holographic panels, architectural module grid, mission wording, staged leaderboard reveal on the projector, calmer effects. See `VISUAL_SYSTEM.md`. What was verified and what was not: see `TEST_REPORT.md`.
 
-## Exit, pin, projector
-- **⏏ EXIT** (top right, tap twice): leaves the game. In the lobby the player disappears from the team; during a round the team keeps waiting for that Builder's lock (or the timer).
-- **Messenger pin** (trainer option, default Off): when On, the peek screen shows a "Pin it to my screen" button and the blueprint stays small on the Messenger's screen until unpinned. Off keeps the original "memory only" rule.
-- **Projector view:** during the round each team gets a live progress bar (% of blueprint bricks placed, locks). The **SHOW BUILDS** button (top left) adds each team's current drawing (updates every ~10 s). After the round it shows the blueprint and the teams' builds, scores after Reveal.
+## Defaults you should know about
+- Opens in **Arabic** (the language button or `?lang=en` switches).
+- **Music is Off** by default (breakout rooms need voices); the ♪ button turns it on.
+- Scoring is unchanged: accuracy x 10 + time bonus (0-100, only if every Builder locked early and accuracy is at least 50%).
 
-## Scoring
-Accuracy = correct bricks / (blueprint bricks + stray bricks), as %. Team score = accuracy × 10 + time bonus (0–100, only if every builder locked early AND accuracy ≥ 50%). Max < 1100. Everyone on the team gets the team score.
-
-## How it works / honest limits
-- Live sync uses the public **ntfy.sh** relay (SSE + POST). No backend, no keys. Public and not confidential: use fictional play only. `?relay=https://your-ntfy` uses your own server.
-- The clock uses the relay's server time, so devices with wrong clocks stay in sync (±1 s).
-- 4 teams, max 6 people per team (1 Messenger + up to 5 Builders). A team needs a Messenger and at least one Builder. No solo mode.
-- "Picture named" is a keyword check on the Messenger's chat, not a quality judgement. Style chips are a self-pick, not an assessment.
-- Free ntfy.sh may rate-limit or cap messages and ~30 streams per IP. Not measured: test before a large class.
-- Tested headless (Playwright + mock relay): full team round, scoring, peek, chat, time-up, resume, Arabic, storage blocked. **Not tested:** real ntfy.sh, real phones/two devices, audio by ear, SSE-blocked polling for this game.
-
-## Two-device checklist
-1. Trainer on laptop, 2 phones as Messenger and Builder (same team).
-2. Roster appears on both; the trainer's ready row turns green.
-3. Start: countdown, timers match; Builder paints, Messenger peeks and chats.
-4. Lock → reveal animation, score equals the trainer's team card.
+## Limits
+Live sync uses the public ntfy.sh relay: not confidential, fictional play only. 4 teams, up to 6 people per team (1 Messenger + up to 5 Builders). Test with two real devices before a large session.
