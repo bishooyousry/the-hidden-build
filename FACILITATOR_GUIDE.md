@@ -1,38 +1,39 @@
-# Facilitator guide: The Hidden Build · Future City (about 15 minutes)
+# Facilitator guide: The Hidden Build · Executive Mission (about 15 minutes)
 
 **Learning goal:** cascading goals. Share the full picture, not only details, and notice how personalities and styles change the way a goal is passed on.
 
 **Timing:** intro 1 min · team-up 1-2 min · mission round 4 min · reveal and debrief 7-8 min.
 
 ## The story to tell (30 seconds)
-"Your team has one mission: rebuild a classified section of the future city. One of you, the Messenger, will see the blueprint. The rest of you, the Builders, never will. Each Builder constructs one zone. Communicate precisely and build in sync."
+"Each team has one mission: build a critical structure of the future organisation. One of you, the Messenger, sees the classified blueprint. The rest, the Builders, never do. Each Builder constructs one zone. Lead with clarity, build in sync, bring the structure online."
 
 ## Setup
-Share the link or the session code. Four teams (colours), one per breakout room if you use them. The first person to tap "I'm the Messenger" is the Messenger. Everyone else builds. No screenshots, no notes. Players can talk on a call; the in-game team chat is optional.
+Share the link or the session code. Four teams (colours), one per breakout room if you use them. The first person to tap "I'm the Messenger" is the Messenger. No screenshots, no notes. Players can talk on a call; the in-game team chat is optional.
 
-## Blueprints (describe them out loud when you debrief)
-| Blueprint | What it is | Cues a Messenger could use |
+## The structures (use them in the debrief)
+| Structure | Leadership link | Cues a Messenger could use |
 | --- | --- | --- |
-| Smart City Core | A central blue tower with an orange antenna | Tall centre column with a white window line, cyan side buildings, coral wings, cyan ground row |
-| Executive Headquarters | A tall office tower with a coral beacon | Blue slab, two rows of white windows, widening base, cyan ground |
-| Strategy Bridge | Two blue towers joined by an orange span | Two white-windowed towers at the edges, an orange bridge in the middle, cyan ground |
-| Digital Command Center | A dome over a screen wall | White dome with a blue centre and an orange core, blue hall with alternating white screens |
-| Connected Network | Four corner nodes linked to a central hub | Orange nodes at the four corners, cyan links on the diagonals, blue and orange hub in the centre |
-| Customer Experience Hub | A diamond of concentric rings | White outer ring, orange ring, blue core with a coral centre |
+| Strategy Tower | Strategy and vision | Tall tower, power core on top, glass windows, steel body widening to a base, energy foundation |
+| Execution Bridge | Turning strategy into delivery | Two steel towers at the edges, orange cables sagging between them, glass deck, energy foundation |
+| KPI Dashboard | Measuring performance | Steel frame, one tall orange bar in the centre, two cyan bars of different heights, glass base |
+| Team Network | Connection and trust | Orange nodes in the four corners, cyan links on the diagonals, a hub in the centre |
+| Customer Journey | Seeing the whole experience | A winding glass path from a cyan start at the bottom left to an orange destination at the top right, two steel touchpoints |
+| Leadership Hub | Alignment around a core | White outer ring, orange ring, steel core with a coral actuator in the centre |
 
-## Pin or no pin?
-Recommended: **Off**. Having to go back and remember is what makes the whole-picture question visible. Turn it **On** for a gentler first round or a tight session.
+## Messenger pin: on or off?
+The pin is **On by default**: the Messenger can pin the blueprint to their screen, so the challenge is communication rather than memory. Switch it **Off** in the console for a harder round: going back to remember is what makes the whole-picture question visible.
 
 ## Run
 1. Press **START ROUND**. The mission countdown starts for every team at once. Do not hint that the whole picture matters.
 2. Open the **Teams** cards and read the live chat if used. Notice: did the Messenger give the whole picture first or start with details? Was the wording clear or ambiguous? How did Builders react to each other?
-3. Open the **Projector view**. Progress bars are always shown; press **SHOW BUILDS** to let the room watch each team's structure grow.
-4. When teams finish (or **END ROUND NOW**), the projector shows the original blueprint next to each team's structure. Press **Reveal leaderboard**: the ranking appears in stages, last place first and the winner last.
+3. Open the **Projector view**: the live city, team progress and, with **SHOW BUILDS**, each team's structure growing.
+4. When teams finish (or **END ROUND NOW**), the projector shows the original blueprint next to each team's structure. Press **Reveal leaderboard**: the ranking appears in stages, last place first and the winner last. A perfect build comes **online** with a cyan glow.
 
 ## Debrief (7-8 minutes)
 - What are the guidelines for cascading a goal so everyone can act on it?
 - Why did, or did not, the full picture come first? What changed once Builders knew what they were building?
 - How did different personalities and styles shape how the Messenger described the structure and how Builders reacted?
+- Link the structure to leadership: what is the "strategy tower" of your own team, and who sees the blueprint?
 
 The debrief panel shows accuracy per team, when the picture was named (a keyword check: read the chat too), blueprint views (peeks) and the clarity gap (the Messenger's self-rating against the Builders' average).
 
@@ -41,6 +42,6 @@ Accuracy = correct modules divided by (blueprint modules + stray modules), as a 
 
 ## Tips
 - If a Builder drops out mid-round the team waits for that lock or the timer. Use END ROUND NOW if needed.
-- Music is Off by default (voices in breakout rooms). Turn it on with the ♪ button only for a plenary.
+- Music is Off by default (voices in breakout rooms).
 - The "picture named" check and the style chips are discussion prompts, not assessments.
 - Free ntfy.sh may limit very large groups: test with two real devices first.

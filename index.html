@@ -270,6 +270,38 @@ body:has(.proj:not(.hide)) #bg{opacity:1}
 
 .rank b:first-child,.rank .tinfo b{font-variant-numeric:tabular-nums}
 
+/* ===== MATERIALS: each colour is a real structural component of the future city (board and palette only; mini previews stay flat) ===== */
+.br.c-W,.sw.c-W{background:
+  linear-gradient(135deg,rgba(255,255,255,.7) 0,rgba(235,244,255,.22) 38%,rgba(77,136,232,.28) 100%),
+  repeating-linear-gradient(90deg,rgba(8,8,40,.34) 0 1px,transparent 1px calc(var(--cs,48px)/3)),
+  repeating-linear-gradient(0deg,rgba(8,8,40,.22) 0 1px,transparent 1px calc(var(--cs,48px)/2)),#DDEBFF;box-shadow:inset 0 0 0 1px rgba(255,255,255,.9),0 0 14px rgba(235,244,255,.35)}
+.br.c-B,.sw.c-B{background:
+  radial-gradient(circle at 14% 14%,rgba(255,255,255,.7) 0 1.6px,transparent 2.2px),radial-gradient(circle at 86% 14%,rgba(255,255,255,.7) 0 1.6px,transparent 2.2px),radial-gradient(circle at 14% 86%,rgba(255,255,255,.7) 0 1.6px,transparent 2.2px),radial-gradient(circle at 86% 86%,rgba(255,255,255,.7) 0 1.6px,transparent 2.2px),
+  linear-gradient(90deg,transparent 49%,rgba(8,8,40,.35) 49% 51%,transparent 51%),linear-gradient(160deg,#78a6f4,#4D88E8 46%,#2c58b0);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4),0 0 14px rgba(77,136,232,.5)}
+.br.c-G,.sw.c-G{background:
+  radial-gradient(circle at 50% 50%,#fff 0 12%,rgba(235,244,255,.7) 14%,transparent 30%),
+  linear-gradient(90deg,transparent 46%,rgba(235,244,255,.85) 46% 54%,transparent 54%) 0 0/100% 60% no-repeat,
+  linear-gradient(0deg,transparent 46%,rgba(235,244,255,.7) 46% 54%,transparent 54%) 0 0/60% 100% no-repeat,
+  linear-gradient(160deg,#5fd6c2,#40BDA9 50%,#23867a);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4),0 0 16px rgba(64,189,169,.75)}
+.br.c-Y,.sw.c-Y{background:radial-gradient(circle at 50% 50%,#fff6d6 0 16%,#FFD27A 34%,#FFBC3A 62%,#c9800a 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5),0 0 20px rgba(255,188,58,.85)}
+.br.c-Y:before{content:'';position:absolute;inset:-3px;border-radius:7px;pointer-events:none;box-shadow:0 0 18px rgba(255,188,58,.75);animation:coreglow 2.6s ease-in-out infinite}
+@keyframes coreglow{50%{opacity:.35}}
+.br.c-R,.sw.c-R{background:repeating-linear-gradient(45deg,rgba(8,8,40,.3) 0 5px,transparent 5px 11px),linear-gradient(160deg,#ff8e6e,#F26A44 52%,#bf4026);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4),0 0 14px rgba(242,106,68,.6)}
+.sw.c-W,.sw.c-B,.sw.c-G,.sw.c-Y,.sw.c-R{--cs:48px}
+.br.c-W:after,.br.c-B:after,.br.c-G:after,.br.c-R:after{border-color:rgba(8,8,40,.22)}
+.br.c-Y:after{border:0}
+/* finished structure comes online */
+.cmpwrap.online:before{content:attr(data-t);flex:0 0 100%;text-align:center;font-weight:800;letter-spacing:.3em;font-size:13px;color:var(--cyan);text-shadow:0 0 18px rgba(64,189,169,.9);animation:fadein .8s both}
+body[dir=rtl] .cmpwrap.online:before{letter-spacing:0}
+.cmpwrap.online .board{border-color:var(--cyan);animation:onlinepulse 2.4s ease-in-out infinite}
+@keyframes onlinepulse{50%{box-shadow:0 14px 40px rgba(0,0,20,.55),0 0 70px rgba(64,189,169,.65),inset 0 0 40px rgba(64,189,169,.14)}}
+/* mini previews: flat */
+.mini i.c-W{background:#EBF4FF}.mini i.c-B{background:#4D88E8}.mini i.c-G{background:#40BDA9}.mini i.c-Y{background:#FFBC3A}.mini i.c-R{background:#F26A44}
+.br.miss.c-W,.br.miss.c-B,.br.miss.c-G,.br.miss.c-Y,.br.miss.c-R{background:rgba(5,5,28,.7);box-shadow:inset 0 0 0 2px var(--coral),0 0 12px rgba(242,106,68,.5)}
+.br.miss.c-Y:before{display:none}
+.br.ok.c-W,.br.ok.c-B,.br.ok.c-G,.br.ok.c-Y,.br.ok.c-R{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45),0 0 0 2px var(--cyan),0 0 18px rgba(64,189,169,.75)}
+.br.bad.c-W,.br.bad.c-B,.br.bad.c-G,.br.bad.c-Y,.br.bad.c-R{box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),0 0 0 2px var(--coral),0 0 16px rgba(242,106,68,.75)}
+
 </style></head><body>
 <canvas id="bg" aria-hidden="true"></canvas><div class="labbg" aria-hidden="true"></div><div class="scan" aria-hidden="true"></div>
 <div class="app" id="app">
@@ -312,7 +344,7 @@ body:has(.proj:not(.hide)) #bg{opacity:1}
 <div class="grow"><label for="labelInput" style="margin-top:0" data-i="sessName">SESSION NAME</label><input id="labelInput" maxlength="30"><label for="linkField" data-i="playerLink">PLAYER LINK</label><input readonly id="linkField"></div></div>
 <div class="row"><button class="primary" id="copyLink" data-i="copyLink">COPY PLAYER LINK</button><button class="btn" id="copyArabic" data-i="copyArabic">COPY ARABIC LINK</button><button class="btn" id="projBtn" data-i="project">PROJECTOR VIEW</button><button class="btn" id="resetBtn" data-i="resetSess">RESET SESSION</button><button class="btn" id="closeBtn" data-i="closeSess">CLOSE SESSION</button></div>
 <div class="card startcard" id="startCard"><div class="row"><div><label for="shapeSel" style="margin-top:0" data-i="shapeLbl">BLUEPRINT</label><select id="shapeSel"></select></div><div><label for="timeSel" style="margin-top:0" data-i="timeLbl">ROUND TIME</label><select id="timeSel"><option value="90">1:30</option><option value="180">3:00</option><option value="240" selected>4:00</option><option value="300">5:00</option></select></div>
-<div><label for="pinSel" style="margin-top:0" data-i="pinLbl">PIN</label><select id="pinSel"><option value="0" data-i="pinOff">Off</option><option value="1" data-i="pinOn">On</option></select></div></div>
+<div><label for="pinSel" style="margin-top:0" data-i="pinLbl">PIN</label><select id="pinSel"><option value="0" data-i="pinOff">Off</option><option value="1" data-i="pinOn" selected>On</option></select></div></div>
 <div id="readyRow" class="readyrow"></div>
 <div class="row"><button class="primary gold" id="startBtn" data-i="startRound">START ROUND</button><button class="btn" id="endRoundBtn" data-i="endRound">END ROUND NOW</button><span class="bigtimer" id="trTimer"></span></div></div>
 <div class="trainergrid"><div class="card"><div data-i="players">Players joined</div><strong id="playerCount">0</strong></div><div class="card"><div data-i="teamsReady">Teams ready</div><strong id="readyCount">0</strong></div><div class="card"><div data-i="roundState">Round</div><strong id="roundState">—</strong></div></div>
@@ -558,21 +590,21 @@ function view(id){mode=id;['intro','game','trainer'].forEach(v=>$(v).classList.t
 /* ===== CONTENT: THE HIDDEN BUILD — every player-facing string is [English, Arabic] ===== */
 /* Blueprints: 9 columns x 7 rows. R red · B blue · Y yellow · G green · W white · . empty. Chosen by the trainer (or at random) when the round starts. */
 const SHAPES=[
-{n:['SMART CITY CORE','نواة المدينة الذكية'],ic:'',kw:['smart city core','city core','core','nucleus','central tower','main tower','tower','نواة','المدينة الذكية','برج مركزي','برج'],g:['....Y....','...BBB...','..BBWBB..','.GBBWBBG.','.GBBBBBG.','RRBBBBBRR','GGGGGGGGG']},
-{n:['EXECUTIVE HEADQUARTERS','المقر التنفيذي'],ic:'',kw:['headquarters','hq','executive headquarters','office tower','skyscraper','tower','المقر','مقر','المقر التنفيذي','ناطحة سحاب','برج'],g:['....R....','..BBBBB..','..BWBWB..','..BBBBB..','..BWBWB..','.BBBBBBB.','GGGGGGGGG']},
-{n:['STRATEGY BRIDGE','جسر الاستراتيجية'],ic:'',kw:['strategy bridge','bridge','two towers','twin towers','sky bridge','skybridge','جسر','جسر الاستراتيجية','برجان','برجين'],g:['BB.....BB','BW.....WB','BBYYYYYBB','BW.....WB','BB.....BB','BB.....BB','GGGGGGGGG']},
-{n:['DIGITAL COMMAND CENTER','مركز القيادة الرقمي'],ic:'',kw:['command center','command centre','digital command','control room','dome','مركز القيادة','القيادة الرقمي','قبة','غرفة التحكم'],g:['...WWW...','..WBBBW..','.WBBYBBW.','BBBBBBBBB','BWBWBWBWB','BBBBBBBBB','GGGGGGGGG']},
-{n:['CONNECTED NETWORK','الشبكة المتصلة'],ic:'',kw:['network','connected network','nodes','hub and spoke','connection','x shape','شبكة','الشبكة المتصلة','عقد','اتصال'],g:['Y.......Y','.G.....G.','..G.B.G..','...GYG...','..G.B.G..','.G.....G.','Y.......Y']},
-{n:['CUSTOMER EXPERIENCE HUB','مركز تجربة العملاء'],ic:'',kw:['customer experience hub','experience hub','customer hub','hub','diamond','rings','مركز تجربة','تجربة العملاء','مركز','معين','حلقات'],g:['...WWW...','..WYYYW..','.WYBBBYW.','.WYBRBYW.','.WYBBBYW.','..WYYYW..','...WWW...']}];
+{n:['STRATEGY TOWER','برج الاستراتيجية'],ic:'',kw:['strategy tower','strategy','tower','skyscraper','antenna tower','برج الاستراتيجية','الاستراتيجية','برج'],g:['....Y....','...BBB...','...BWB...','..BBBBB..','..BWBWB..','.BBBBBBB.','GGGGGGGGG']},
+{n:['EXECUTION BRIDGE','جسر التنفيذ'],ic:'',kw:['execution bridge','bridge','suspension bridge','cable bridge','two towers','جسر التنفيذ','جسر','برجان','برجين'],g:['BB.....BB','BB.....BB','BY.....YB','BWYYYYYWB','BW.....WB','BB.....BB','GGGGGGGGG']},
+{n:['KPI DASHBOARD','لوحة المؤشرات'],ic:'',kw:['kpi dashboard','kpi','dashboard','bar chart','chart','screen','لوحة المؤشرات','لوحة','مؤشرات','رسم بياني','شاشة'],g:['BBBBBBBBB','B...Y...B','B...Y.G.B','B.G.Y.G.B','B.G.Y.G.B','BBBBBBBBB','WWWWWWWWW']},
+{n:['TEAM NETWORK','شبكة الفريق'],ic:'',kw:['team network','network','nodes','hub and spoke','connection','x shape','شبكة الفريق','شبكة','عقد','اتصال'],g:['Y.......Y','.G.....G.','..G.B.G..','...GYG...','..G.B.G..','.G.....G.','Y.......Y']},
+{n:['CUSTOMER JOURNEY','رحلة العميل'],ic:'',kw:['customer journey','journey','path','roadmap','route','رحلة العميل','رحلة','مسار','طريق'],g:['......WWY','......W..','..WWWWB..','..W......','..BWW....','....W....','GWWWW....']},
+{n:['LEADERSHIP HUB','مركز القيادة'],ic:'',kw:['leadership hub','hub','rings','concentric','diamond','core','مركز القيادة','مركز','حلقات','معين'],g:['...WWW...','..WYYYW..','.WYBBBYW.','.WYBRBYW.','.WYBBBYW.','..WYYYW..','...WWW...']}];
 const TEAMS=[{n:['RED','الأحمر'],c:'#F26A44',ic:''},{n:['BLUE','الأزرق'],c:'#4D88E8',ic:''},{n:['GREEN','الأخضر'],c:'#40BDA9',ic:''},{n:['YELLOW','الأصفر'],c:'#FFBC3A',ic:''}];
-const PAL=[['R','Red','أحمر'],['B','Blue','أزرق'],['Y','Yellow','أصفر'],['G','Green','أخضر'],['W','White','أبيض']];
+const PAL=[['R','Red · actuator','أحمر · محرّك'],['B','Blue · smart panel','أزرق · لوح ذكي'],['Y','Orange · power core','برتقالي · نواة طاقة'],['G','Cyan · energy line','سماوي · خط طاقة'],['W','White · glass facade','أبيض · واجهة زجاجية']];
 const ZC=['#40BDA9','#FFBC3A','#4D88E8','#F26A44','#EBF4FF'];
 const STYLES=[{ic:'',n:['DRIVER','المنفّذ'],d:['Straight to action','يدخل في التنفيذ مباشرة']},{ic:'',n:['VISIONARY','صاحب الرؤية'],d:['Paints the big picture','يرسم الصورة الكبيرة']},{ic:'',n:['CONNECTOR','المتعاون'],d:['Keeps everyone in sync','يُبقي الجميع على نفس الصفحة']},{ic:'',n:['ANALYST','المحلل'],d:['Details, step by step','التفاصيل خطوة بخطوة']}];
 function zoneName(nb,z){if(nb===1)return L('WHOLE BOARD','اللوحة كاملة');if(nb===2)return[L('LEFT','اليسار'),L('RIGHT','اليمين')][z];if(nb===3)return[L('LEFT','اليسار'),L('MIDDLE','الوسط'),L('RIGHT','اليمين')][z];return L('PART ','الجزء ')+(z+1)}
 const T={
 title:['The Hidden Build','البناء الخفي'],
 subtitle:['FUTURE CITY · LEADERSHIP MISSION','مدينة المستقبل · مهمة قيادية'],
-intro:['Your team has one mission: rebuild a classified section of the future city. One Messenger sees the blueprint. The Builders never do. Communicate precisely, build in sync, and bring the structure online.','مهمة فريقكم: إعادة بناء جزء سري من مدينة المستقبل. الناقل وحده يرى المخطط، والبنّاؤون لا يرونه أبدًا. تواصلوا بدقة، وابنوا بانسجام، وأعيدوا الهيكل إلى العمل.'],
+intro:['Each team must construct a critical structure of the future organisation: strategy, execution, performance or people. One Messenger sees the classified blueprint. The Builders never do. Lead with clarity, build in sync and bring the structure online.','على كل فريق بناء هيكل حيوي من منظومة المستقبل: الاستراتيجية أو التنفيذ أو الأداء أو الفريق. الناقل وحده يرى المخطط السري، والبنّاؤون لا يرونه أبدًا. قودوا بوضوح، وابنوا بانسجام، وشغّلوا الهيكل.'],
 pillA:['LEADERSHIP MISSION','مهمة قيادية'],pillB:['~6 MINUTES','حوالي 6 دقائق'],pillC:['LIVE LEADERBOARD','ترتيب مباشر'],
 name:['YOUR NAME','اسمك'],session:['SESSION CODE','رمز الجلسة'],
 joinInfo:['Type your name, the room code from your trainer and pick your team. That’s all.','اكتب اسمك ورمز الجلسة الذي يزوّدك به المدرب، ثم اختر فريقك.'],
@@ -745,7 +777,7 @@ function renderPin(){const b=$('pinBox');if(!b)return;if(!(PS&&PS.round&&PS.roun
 const wmURL=n=>'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="260" height="110"><text x="10" y="60" fill="#fff" font-size="15" font-family="Arial" transform="rotate(-18 130 55)">'+String(n).replace(/[<&>"]/g,'')+' · '+L('NO PHOTOS','ممنوع التصوير')+'</text></svg>');
 function blueprintHTML(){const R=myRoster(),zr=zoneRanges(R.bids.length),tg=target(PS);
  return '<div class="pkwrap" style="--wm:url(\''+wmURL(me.name)+'\')"><div class="pkhead"><b>🔒 '+L('CLASSIFIED BLUEPRINT','مخطط سري للغاية')+'</b><span id="pkT">'+PEEK_SECS+'</span></div><div class="pkbar"><i id="pkBar"></i></div>'+
- '<div class="zlabels" style="--cols:'+W+'">'+zr.map((r,z)=>'<span style="grid-column:'+(r.x0+1)+'/span '+r.w+';--z:'+ZC[z]+'">'+esc(zoneName(zr.length,z)+' · '+nameOf(R.bids[z]))+'</span>').join('')+'</div>'+boardHTML(tg,{zones:zr})+'<p class="small muted" style="text-align:center">'+L('No screenshots. No notes. Just your memory.','ممنوع التصوير والملاحظات. اعتمد على ذاكرتك فقط.')+'</p>'+(PS.round.pin?'<div class="row" style="justify-content:center"><button class="primary" id="pinIt">'+L('PIN IT TO MY SCREEN','ثبّته على شاشتي')+'</button></div>':'')+'</div>'}
+ '<div class="zlabels" style="--cols:'+W+'">'+zr.map((r,z)=>'<span style="grid-column:'+(r.x0+1)+'/span '+r.w+';--z:'+ZC[z]+'">'+esc(zoneName(zr.length,z)+' · '+nameOf(R.bids[z]))+'</span>').join('')+'</div>'+boardHTML(tg,{zones:zr})+'<p class="small muted" style="text-align:center">'+((PS&&PS.round&&PS.round.pin)?L('No screenshots. No notes. You may pin the blueprint.','ممنوع التصوير والملاحظات. يمكنك تثبيت المخطط على شاشتك.'):L('No screenshots. No notes. Just your memory.','ممنوع التصوير والملاحظات. اعتمد على ذاكرتك فقط.'))+'</p>'+(PS.round.pin?'<div class="row" style="justify-content:center"><button class="primary" id="pinIt">'+L('PIN IT TO MY SCREEN','ثبّته على شاشتي')+'</button></div>':'')+'</div>'}
 async function doPeek(){
  if(peeking||phase(PS)!=='build')return;const tok=renderTok;peeking=true;me.peeks++;saveMe();send({type:'peek',team:me.team,cid:rand().slice(0,10)});renderRosterMini();
  const ov=$('peek');ov.className='peek';ov.innerHTML='<div class="walkbox"><div class="walker"> </div><b>'+L('WALKING TO THE BLUEPRINT…','في الطريق إلى المخطط…')+'</b><br><small class="muted">'+L('You cannot type while you are away','لا يمكنك الكتابة وأنت بعيد')+'</small></div>';
@@ -784,7 +816,7 @@ function tick(){
  if(me.stage===2){updateTimer();if(ph==='ended'||teamLocked(PS,me.team))finishBuild(ph==='ended'&&!teamLocked(PS,me.team))}}
 /* ---------- stage 3: reveal ---------- */
 function allPartsIn(){const R=myRoster();return !!R&&R.bids.every((_,z)=>PS.parts[me.team+':'+z])}
-const accTitle=a=>a>=100?[L('PERFECT MATCH','تطابق تام'),'good']:a>=80?[L('GREAT BUILD','بناء رائع'),'good']:a>=50?[L('GETTING THERE','قريبون'),'good']:[L('BACK TO THE BLUEPRINT','ارجعوا للمخطط'),'bad'];
+const accTitle=a=>a>=100?[L('STRUCTURE ONLINE','الهيكل يعمل بكفاءة تامة'),'good']:a>=80?[L('STRUCTURE STABLE','هيكل مستقر'),'good']:a>=50?[L('PARTIAL ACTIVATION','تفعيل جزئي'),'good']:[L('REBUILD REQUIRED','يلزم إعادة البناء'),'bad'];
 function renderS3(){
  musStart('result');const r=PS&&PS.round,R=myRoster(),role=myRole();
  if(!r){goStage(1);return}
@@ -832,7 +864,7 @@ function finishReveal(res,instant){
  if(!$('bWrap'))return;asmDone=true;me.asmSeen=true;saveMe();
  if(instant||skipAsm){const sh=SHAPES[PS.round.shape];$('tWrap').innerHTML=boardHTML(target(PS),{});$('tBox').classList.remove('hide');$('resTitle').innerHTML=sh.ic+' '+esc(LT(sh.n));markCompare(res)}
  $('skipAsm').classList.add('hide');splashHide();paintStats(res,!instant);
- const [ttl,kind]=accTitle(res.acc);
+ const [ttl,kind]=accTitle(res.acc);const cw=document.querySelector('.cmpwrap');if(cw){cw.dataset.t=L('STRUCTURE ONLINE','الهيكل يعمل');cw.classList.toggle('online',res.acc>=100)}
  if(!instant){stampFx(ttl,res.acc+'%',kind);snd(kind==='good'?'fanfare':'err');if(kind==='good'){confetti(60+res.acc*2);setTimeout(()=>confetti(100+res.acc),500)}else{flash('bad');shakeApp()}}
  $('afterBox').classList.remove('hide');updateHUD();
  if(!me.doneSent){me.doneSent=true;saveMe()}

@@ -1,34 +1,22 @@
-# Test report: The Hidden Build · Future City
+# Test report: The Hidden Build · Executive Mission
 
 ## How it was tested
-- Automated end-to-end run with Playwright (Chromium), using **separate browser contexts as separate players** (trainer, Messenger, Builders, spectator) against a **mock relay** that speaks the same protocol as ntfy.sh (publish, server-sent events, replay).
-- Visual checks by screenshot: entry screen (Arabic), mission control, Messenger lobby and build, classified blueprint, Builder screen (desktop and 390 px phone, Arabic), projector (build, round over, leaderboard), result and reveal.
+Automated end-to-end run with Playwright (Chromium) using separate browser contexts as separate players (trainer, Messenger, Builders, spectator) against a mock relay that speaks the same protocol as ntfy.sh. Visual checks by screenshot: entry screen, mission control, blueprint view with the pin button, builder screen with the new materials, final reveal with "STRUCTURE ONLINE", and the earlier projector and mobile checks of the same design system.
 
 ## Verified (52 automated checks passed, 0 failed)
-- Join: a 5-character session code is required; a player cannot join without a team; a trainer sees players and team readiness.
-- Roles: the first player to tap becomes the Messenger; Builders see who the Messenger is; a team without a Messenger becomes spectators and can watch the result.
-- Blueprint secrecy: the blueprint appears only in the Messenger's classified view (63 cells, then closes); Builders never receive it; the optional pin works only when the trainer enables it.
-- Zones: Builder zones together cover all 9 columns; painting before GO is ignored; a locked team cannot change.
-- Communication: team chat (collapsed by default), Messenger-to-Builders messages and Builders' quick questions are delivered; the "picture named first" keyword check works.
-- Timer and rounds: the countdown runs, the time-up auto-locks and scores, END ROUND NOW works.
-- Locking and scoring: a perfect build scores 100% accuracy and 1000 + a time bonus (at most 100); 3 correct and 1 stray scores as expected; no time bonus below 50% accuracy. **The scoring algorithm was not changed.**
-- Leaderboard: the trainer reveals it, players and the projector show it, hide works.
-- Trainer: configuration (blueprint, time, pin), team cards, debrief panel, reflection, CSV export, second session with a new code, exit button, projector progress and SHOW BUILDS.
-- Language: Arabic RTL layout and result re-render; resume after refresh; works with browser storage blocked.
-- Not an error: no uncaught JavaScript errors were raised in the screenshot sessions (desktop and phone).
+Join with a 5-character code and a team; roles and Messenger claim; the blueprint reaches only the Messenger (63 cells, closes); Builder zones cover all 9 columns; painting before GO is ignored; chat and quick questions; timer, time-up auto-lock, END ROUND NOW; locking and scoring (perfect build 100% and 1000 + bonus; 3 right + 1 stray scored correctly; no bonus below 50%); leaderboard reveal on players and projector; trainer dashboard, debrief panel, CSV, second session, exit; Arabic RTL; resume; storage blocked; the Messenger pin now On by default and working. **The scoring algorithm was not changed.**
 
-## Functional changes made (all intentional)
-1. Six new blueprints replace the original six (same 9 x 7 grid and the same five materials, so all mechanics are unchanged). The "picture named" keyword lists were rewritten for them.
-2. "Bricks" are called **modules** in the interface. Team emojis and decorative icons were removed.
-3. Defaults changed: Arabic is the default language and music is Off by default.
-4. A small fix: the quick-question chips sent their text without the leading emoji; with the emoji removed they now send the full text.
-5. The projector no longer rebuilds its content every second when nothing changed, so reveal animations play once.
+## Changes made in this version
+1. Blueprints are now Strategy Tower, Execution Bridge, KPI Dashboard, Team Network, Customer Journey and Leadership Hub (same 9 x 7 grid and the same five materials).
+2. The five colours render as structural components (glass, steel, energy line, power core, actuator).
+3. The Messenger pin is **On by default** (was Off); the trainer can switch it in the console.
+4. Result headlines: Structure online / Structure stable / Partial activation / Rebuild required; a perfect build glows.
+5. Earlier in this series: Arabic default, music Off by default, emojis removed, quick-chip fix, projector re-render fix.
 
-## Not verified (read before a real workshop)
-- **The real ntfy.sh relay and real devices.** Multiplayer was verified across separate browser sessions against a mock relay, not across separate physical devices on the real relay. The free relay can rate-limit big groups. Test with two real devices first.
-- **Audio** (sound effects) was not listened to.
-- **Browsers:** only Chromium was run. The projector uses the CSS `:has()` selector (supported in current Chrome, Edge, Safari and Firefox); on an older browser the dashboard may show faintly behind the projector.
-- **Real projector or large screen** appearance, brightness and contrast.
-- **The visual reference image** (futuristic smart city) and the original ZIP were not attached to the message. The work was based on the existing source code and the palette given earlier, so the skyline is an original design, not a match to that image.
-- **Arabic wording** should be reviewed by a native Saudi reader.
-- The two-device checklist in the README should be run once before the session.
+## Not verified
+- The real ntfy.sh relay and real devices: multiplayer was verified across separate browser sessions against a mock relay. Test with two real devices before the workshop.
+- Audio was not listened to; only Chromium was run (the projector uses CSS `:has()`).
+- Appearance on a real projector or a very large screen.
+- The visual reference image and the original ZIP were not attached to the message; the skyline is an original design.
+- Arabic wording should be reviewed by a native Saudi reader.
+- The verbal difficulty of "Customer Journey" (a winding path) is higher than the others: try it in a dry run before using it for senior groups.
