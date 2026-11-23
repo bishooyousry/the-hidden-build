@@ -349,7 +349,7 @@ textarea{width:100%;padding:13px;background:#0c1930;border:1px solid #496389;bor
 <div class="row"><button class="primary" id="copyLink" data-i="copyLink">COPY PLAYER LINK</button><button class="btn" id="copyArabic" data-i="copyArabic">COPY ARABIC LINK</button><button class="btn" id="projBtn" data-i="project">PROJECTOR VIEW</button><button class="btn" id="resetBtn" data-i="resetSess">RESET SESSION</button><button class="btn" id="closeBtn" data-i="closeSess">CLOSE SESSION</button></div>
 <div class="trainergrid"><div class="card"><div data-i="players">Players joined</div><strong id="playerCount">0</strong></div><div class="card"><div data-i="teamsLbl">Teams</div><strong id="teamCount">0</strong></div><div class="card"><div data-i="doneRounds">Systems online</div><strong id="doneCount">0</strong></div></div>
 <div class="card ctl"><h3 style="margin:0 0 10px" data-i="roundCtl">ROUND CONTROL</h3>
-<div class="row"><div><label for="briefSel" style="margin:0 0 4px" data-i="briefLen">Guide study time</label><select id="briefSel"><option value="30">30 s</option><option value="45" selected>45 s</option><option value="60">60 s</option><option value="90">90 s</option></select></div>
+<div class="row"><div><label for="roundsSel" style="margin:0 0 4px" data-i="roundsLen">Rounds to play</label><select id="roundsSel"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option></select></div><div><label for="briefSel" style="margin:0 0 4px" data-i="briefLen">Guide study time before building</label><select id="briefSel"><option value="0" selected data-i="noWait">No wait — start now</option><option value="30">30 s</option><option value="45">45 s</option><option value="60">60 s</option><option value="90">90 s</option></select></div>
 <div><label for="buildSel" style="margin:0 0 4px" data-i="buildLen">Build time</label><select id="buildSel"><option value="0.7">−30%</option><option value="1" selected>100%</option><option value="1.4">+40%</option></select></div>
 <button class="primary pulse-btn" id="startRoundBtn" data-i="startRound">START ROUND</button><button class="btn" id="endRoundBtn" data-i="endRound">END ROUND NOW</button><button class="btn" id="redealBtn" data-i="redeal">RE-DEAL</button></div>
 <div class="small muted" id="roundStatus" style="margin-top:10px"></div></div>
@@ -503,6 +503,7 @@ const num=(v,d,min,max)=>{v=Number(v);return Number.isFinite(v)?Math.max(min,Mat
 function teamOf(S,p){const a=S.assign[p.id];return a&&a.at>=p.joinAt?a.team:p.team}
 function members(S,t){return [...S.players.values()].filter(p=>teamOf(S,p)===t).sort((a,b)=>a.joinAt-b.joinAt||a.id.localeCompare(b.id))}
 function teamsIn(S){return [...new Set([...S.players.values()].map(p=>teamOf(S,p)))].sort((a,b)=>a-b)}
+function totalOf(S){const n=lastRound(S);return n&&S.rounds[n]?Math.max(n,S.rounds[n].total||ROUNDS.length):ROUNDS.length}
 function lastRound(S){let n=0;for(const k of Object.keys(S.rounds))n=Math.max(n,+k);return n}
 function phaseOf(S,n){const R=S.rounds[n];if(!R)return 'idle';const now=SN(),el=now-R.at;if(R.endAt&&now>=R.endAt)return 'over';if(el<R.brief*1000)return 'brief';if(el<(R.brief+R.build)*1000)return 'build';return 'over'}
 /* team board for a round: replays the place events in time order -> cells, counts, completion time, score */
@@ -522,7 +523,7 @@ function rankTeams(S){return teamsIn(S).map(t=>teamTotals(S,t)).sort((a,b)=>b.sc
 const CUE_KINDS=['ok','wait','again','close'];
 /* ===== MESSAGE PROTOCOL (every payload: {v:1,session,at,type,...}; keep each < 4096 bytes) =====
    join {id,name,team}            player appears in a team            assign {target,team}   trainer moves a player
-   round {n,brief,build}          trainer starts round n              rend {n}               trainer ends round n now
+   round {n,brief,build,total}    trainer starts round n (total = rounds planned, 1..3; brief 0 = start at once)              rend {n}               trainer ends round n now
    deal {team,n,guide,hands}      trainer: who guides, which tiles each builder holds (self-contained, latest wins)
    place {id,name,team,n,tile,cell}  a builder tries tile->cell (correct iff tile===cell)   vision {team,n,text}   guide's one-liner
    cue {team,n,kind}              guide signal: ok|wait|again|close   data {id,name,data:{r1..r3}}  reflections    reveal {show} / end {}  */
@@ -534,7 +535,7 @@ function ingest(S,x){
  const ty=x.type,team=num(x.team,-1,-1,NT-1),n=num(x.n,0,0,ROUNDS.length);
  if(ty==='reveal'){S.reveal=!!x.show;return{type:ty}}
  if(ty==='end'){S.ended=true;return{type:ty}}
- if(ty==='round'){if(!n)return null;const o=S.rounds[n];if(o&&o.at>=at)return null;S.rounds[n]={n,at,brief:num(x.brief,45,0,180),build:num(x.build,300,30,1500),endAt:0};S.bc.clear();return{type:ty,n}}
+ if(ty==='round'){if(!n)return null;const o=S.rounds[n];if(o&&o.at>=at)return null;S.rounds[n]={n,at,brief:num(x.brief,0,0,180),build:num(x.build,300,30,1500),total:num(x.total,ROUNDS.length,1,ROUNDS.length),endAt:0};S.bc.clear();return{type:ty,n}}
  if(ty==='rend'){const R=S.rounds[n];if(!R||at<R.at)return null;R.endAt=at;S.bc.clear();return{type:ty,n}}
  if(ty==='deal'){if(team<0||!n||typeof x.guide!=='string'||!x.hands||typeof x.hands!=='object')return null;const k=tk(team,n),o=S.deals[k];if(o&&o.at>=at)return null;const N=cfgOf(n).cols*cfgOf(n).rows,hands={};Object.keys(x.hands).slice(0,16).forEach(id=>{if(Array.isArray(x.hands[id]))hands[id]=x.hands[id].slice(0,N).map(v=>num(v,-1,-1,N-1)).filter(v=>v>=0)});S.deals[k]={at,guide:x.guide.slice(0,24),hands};return{type:ty,team,n}}
  if(ty==='assign'){if(typeof x.target!=='string'||team<0)return null;const o=S.assign[x.target];if(o&&o.at>=at)return null;S.assign[x.target]={team,at};return{type:ty,target:x.target,team}}
@@ -590,7 +591,7 @@ codeLabel:['SESSION CODE','كود السيشن'],sessName:['SESSION NAME (option
 project:['📽 PROJECTOR VIEW','📽 عرض البروجكتر'],resetSess:['↻ RESET SESSION','↻ إعادة ضبط السيشن'],closeSess:['✕ CLOSE SESSION','✕ إغلاق السيشن'],
 coverage:['DEBRIEF PANEL','لوحة النقاش'],guide:['FACILITATOR GUIDE (timing & debrief)','دليل المدرب (التوقيت والنقاش)'],
 projJoin:['JOIN AT','ادخل على'],noSession:['No session yet. Press “+ NEW SESSION”.','لا توجد سيشنات. اضغط «+ سيشن جديد».'],
-roundCtl:['ROUND CONTROL','التحكم في الجولات'],briefLen:['Guide study time','وقت دراسة الموجّه'],buildLen:['Build time','وقت البناء'],
+roundCtl:['ROUND CONTROL','التحكم في الجولات'],briefLen:['Guide study time before building','وقت دراسة الموجّه قبل البناء'],roundsLen:['Rounds to play','عدد الجولات'],noWait:['No wait — start now','بدون انتظار — ابدأ فورًا'],buildLen:['Build time','وقت البناء'],
 startRound:['▶ START ROUND','▶ ابدأ الجولة'],endRound:['⏹ END ROUND NOW','⏹ إنهاء الجولة الآن'],redeal:['⟳ RE-DEAL PIECES','⟳ إعادة توزيع القطع'],
 teamGrid:['TEAMS LIVE','الفرق مباشرة'],playersTbl:['PLAYERS','المشاركون'],
 };
@@ -618,7 +619,7 @@ const TIPS_B=[
 ['Tap a piece, then tap a cell. Or drag it onto the board.','اضغط على القطعة ثم على الخانة. أو اسحبها إلى اللوحة.']];
 const REFLECT=[['What made the instructions clear (or unclear)?','ما الذي جعل التعليمات واضحة (أو غير واضحة)؟'],['What would you do differently as the guide?','ماذا ستفعل بشكل مختلف كموجّه؟'],['What will you take back to your own team at work?','ما الذي ستنقله إلى فريقك في العمل؟']];
 const GUIDE=[
-['⏱ Timing: intro 3 min · 3 rounds × ~7 min (brief 45s + build 4–6 min + quick team chat) · reveal + debrief 8–10 min. Total ≈ 35 min.','⏱ التوقيت: مقدمة ٣ دقائق · ٣ جولات × ٧ دقائق تقريبًا (دراسة ٤٥ث + بناء ٤–٦ د + نقاش سريع) · الإظهار والنقاش ٨–١٠ دقائق. الإجمالي ≈ ٣٥ دقيقة.'],
+['⏱ Timing: intro 3 min · each round ≈ 6–8 min (build 4–6 min + quick team chat) · reveal + debrief 8–10 min. Choose 1, 2 or 3 rounds in ROUND CONTROL. By default a round starts the moment you press START; optionally set a guide study time (30–90 s).','⏱ التوقيت: مقدمة ٣ دقائق · كل جولة ≈ ٦–٨ دقائق (بناء ٤–٦ د + نقاش سريع) · الإظهار والنقاش ٨–١٠ دقائق. اختر ١ أو ٢ أو ٣ جولات من «التحكم في الجولات». افتراضيًا تبدأ الجولة فور ضغطك على «ابدأ»، ويمكنك اختياريًا تحديد وقت دراسة للموجّه (٣٠–٩٠ ثانية).'],
 ['1. Share the player link. Players pick a TEAM (3–5 per team works best). Use the Team column to move anyone. Put each team in a breakout room with voice on — the guide talks, builders listen and ask.','١. شارك رابط المشاركين. كل لاعب يختار فريقه (٣–٥ في الفريق أفضل). استخدم عمود الفريق لنقل أي لاعب. ضع كل فريق في غرفة صوتية — الموجّه يتحدث والبنّاؤون يسمعون ويسألون.'],
 ['2. Press START ROUND. The guide changes every round. The guide sees the full picture, builders only see their own pieces. Nobody should share screens.','٢. اضغط «ابدأ الجولة». الموجّه يتغيّر في كل جولة. الموجّه يرى الصورة كاملة والبنّاؤون يرون قطعهم فقط. ممنوع مشاركة الشاشة.'],
 ['3. Tip: ask teams to use headphones or switch music off (🎵) so the music doesn’t leak into the call.','٣. نصيحة: اطلب من الفرق استخدام سماعات أو إيقاف الموسيقى (🎵) حتى لا تتسرب إلى المكالمة.'],
@@ -793,7 +794,7 @@ function getCtx(){const S=PS;if(!S)return null;const n=lastRound(S),t=myTeam(),R
  const role=!deal?'':(isG&&hand?'GB':isG?'G':hand?'B':'O');
  return{S,n,t,R,ph,cfg,deal,b,isG,hand,role,won:!!(b&&b.done)}}
 function screenKey(c){if(!c)return 'none';if(!c.n)return 'lobby';if(!c.deal)return 'wait|'+c.n;
- if(c.won||c.ph==='over')return (c.n===ROUNDS.length?'final|':'result|')+c.n;
+ if(c.won||c.ph==='over')return (c.n>=totalOf(c.S)?'final|':'result|')+c.n;
  return c.ph+'|'+c.n+'|'+c.role}
 const roleName=r=>r==='G'?L('🧭 GUIDE','🧭 الموجّه'):r==='B'?L('🧩 BUILDER','🧩 بنّاء'):r==='GB'?L('🧭🧩 SOLO','🧭🧩 فردي'):L('👀 OBSERVER','👀 مراقب');
 const railIndex=k=>k==='lobby'||k==='none'?1:k.startsWith('final')?5:(+k.split('|')[1]||0)+1;
@@ -801,7 +802,7 @@ const canSeeRank=()=>!!PS&&!PS.local&&lastRound(PS)>0;
 /* ---------- HUD ---------- */
 function updateHUD(){
  if(mode!=='game')return;const c=getCtx(),key=screenKey(c),ri=railIndex(key);
- $('rail').innerHTML=STAGES.map((s,i)=>'<div class="rs'+(i+1<ri?' past':i+1===ri?' cur':'')+'"><b>'+(i+1)+'</b><span>'+LT(s)+'</span></div>').join('');
+ const nr=PS?totalOf(PS):ROUNDS.length,rail=[STAGES[0],...ROUNDS.slice(0,nr).map((r,i)=>STAGES[i+1]),STAGES[4]],ri2=key.startsWith('final')?rail.length:ri;$('rail').innerHTML=rail.map((s,i)=>'<div class="rs'+(i+1<ri2?' past':i+1===ri2?' cur':'')+'"><b>'+(i+1)+'</b><span>'+LT(s)+'</span></div>').join('');
  const t=myTeam(),tt2=$('teamTag');tt2.style.setProperty('--tc',teamCol(t));tt2.textContent=PS&&PS.local?L('SOLO PRACTICE','تدريب فردي'):'⬢ '+teamName(t);
  const rp=$('rolePill');if(c&&c.role){rp.textContent=roleName(c.role);rp.className='rolepill '+(c.role.includes('G')?'g':'b')}else{rp.textContent=L('LOBBY','الاستعداد');rp.className='rolepill'}
  const b=c&&c.b,pct=b?Math.round(b.ok/b.N*100):0;$('eFill').style.width=pct+'%';$('ePct').textContent=pct+'%';$('eLbl').textContent=L('TEAM BUILD','بناء الفريق');
@@ -828,8 +829,8 @@ function renderStage(){renderTok++;BOARDS.length=0;stopAmb();const c=getCtx(),ke
 function gameUpdate(){const c=getCtx(),key=screenKey(c);if(key!==curKey){renderStage();return}updateHUD();const k=key.split('|')[0];if(k==='lobby')updLobby(c);else if(k==='brief'||k==='build')updPlay(c)}
 /* ---------- intro splashes + countdown ---------- */
 async function roundIntro(c){if(!c||me.seen[c.n])return;me.seen[c.n]=1;saveMe();if(RM())return;const tok=renderTok;
- await splash(L('ROUND '+c.n,'الجولة '+c.n),c.cfg.icon,LT(c.cfg.name),1400,'power','ok');if(tok!==renderTok)return;
- await splash(L('YOUR ROLE','دورك'),c.role.includes('G')?'🧭':c.role==='B'?'🧩':'👀',roleName(c.role).replace(/^\S+\s/,''),1700,'boom','ok')}
+ if(c.R.brief>0){await splash(L('ROUND '+c.n,'الجولة '+c.n),c.cfg.icon,LT(c.cfg.name),1400,'power','ok');if(tok!==renderTok)return}
+ await splash(L('YOUR ROLE','دورك'),c.role.includes('G')?'🧭':c.role==='B'?'🧩':'👀',roleName(c.role).replace(/^\S+\s/,''),c.R.brief>0?1700:1100,'boom','ok')}
 let cdFor='';
 async function countdown(c){const key=PS.code+':'+c.n;if(cdFor===key)return;cdFor=key;if(RM()){snd('go');return}
  const t0=c.R.at+c.R.brief*1000;
@@ -849,7 +850,7 @@ function updLobby(c){const el=$('lobbyRoster');if(el&&PS)el.innerHTML=rosterHTML
 function renderWait(c){$('stageBox').innerHTML='<div class="holo" style="--hc:'+c.cfg.col+'">'+headHTML(c)+'<div class="bignote"><span class="em">'+c.cfg.icon+'</span><div class="waitdots">'+L('Round started — your team is receiving its pieces','بدأت الجولة — فريقك يستلم القطع الآن')+'</div><p class="small muted">'+L('If this takes more than a few seconds, tell the trainer (you may have joined after the round started).','إذا طال الانتظار أخبر المدرب (ربما انضممت بعد بدء الجولة).')+'</p></div></div>'}
 /* ---------- boards (canvas) ---------- */
 const BOARDS=[],MINIS=[];   // BOARDS = player-screen canvases (reset on every screen), MINIS = trainer/projector team thumbnails
-function headHTML(c){const g=c.cfg;return '<div class="roundhead" style="--hc:'+g.col+'"><span class="ri">'+g.icon+'</span><div><div class="eyebrow">'+L('ROUND '+c.n+' / '+ROUNDS.length,'الجولة '+c.n+' / '+ROUNDS.length)+'</div><h2>'+esc(LT(g.name))+'</h2><div class="small">'+esc(LT(g.tag))+' · '+esc(LT(g.why))+'</div></div></div>'}
+function headHTML(c){const g=c.cfg;return '<div class="roundhead" style="--hc:'+g.col+'"><span class="ri">'+g.icon+'</span><div><div class="eyebrow">'+L('ROUND '+c.n+' / '+totalOf(c.S),'الجولة '+c.n+' / '+totalOf(c.S))+'</div><h2>'+esc(LT(g.name))+'</h2><div class="small">'+esc(LT(g.tag))+' · '+esc(LT(g.why))+'</div></div></div>'}
 function boardHTML(id,cfg,interactive,cls){return '<div class="boardwrap '+(cls||'')+'" id="'+id+'" style="aspect-ratio:'+ART_DIM[cfg.id][0]+'/'+ART_DIM[cfg.id][1]+'"><canvas></canvas>'+(interactive?'<div class="bcells" style="grid-template-columns:repeat('+cfg.cols+',1fr);grid-template-rows:repeat('+cfg.rows+',1fr)">'+Array.from({length:cfg.cols*cfg.rows},(_,i)=>'<button type="button" class="bcell" data-c="'+i+'" aria-label="'+L('Cell ','خانة ')+cellName(cfg,i)+'"></button>').join('')+'</div>':'')+'</div>'}
 function mountBoard(id,kind,cfg,opt){const wrap=$(id);if(!wrap)return null;const B={wrap,cv:wrap.querySelector('canvas'),kind,cfg,sel:-1,hover:-1,snap:{},prev:null,wrong:null,t0:0,last:0,gap:0,st:null,...(opt||{})};BOARDS.push(B);return B}
 function drawLabel(g,txt,x,y,size,col,al){g.font='800 '+size+'px ui-monospace,Consolas,monospace';g.textAlign=al||'center';g.textBaseline='middle';g.fillStyle=col;g.fillText(txt,x,y)}
@@ -976,7 +977,7 @@ function renderResult(c,fin){
  h+='<button class="btn" id="reportBtn">'+L('DOWNLOAD BACKUP RESULT','تحميل نسخة احتياطية للنتيجة')+'</button>'+(fin?'<button class="btn" id="againBtn">'+L('PLAY AGAIN','العب مرة أخرى')+'</button>':'')+'</div>';
  if(!solo&&!fin)h+='<p class="small muted waitdots" style="margin-top:12px">'+L('Waiting for the trainer to start the next round','في انتظار المدرب لبدء الجولة التالية')+'</p>';
  h+='</div></div>';
- if(fin&&!solo){const tt3=teamTotals(PS,c.t);h+='<div class="vision" style="margin-top:16px"><b>'+L('YOUR TEAM IN TOTAL','فريقك في المجموع')+'</b>★ '+tt3.score+' · '+tt3.done+'/'+ROUNDS.length+' '+L('systems online','منظومات شغّالة')+' · ⏱ '+fmt(tt3.secs)+'</div>'}
+ if(fin&&!solo){const tt3=teamTotals(PS,c.t);h+='<div class="vision" style="margin-top:16px"><b>'+L('YOUR TEAM IN TOTAL','فريقك في المجموع')+'</b>★ '+tt3.score+' · '+tt3.done+'/'+totalOf(PS)+' '+L('systems online','منظومات شغّالة')+' · ⏱ '+fmt(tt3.secs)+'</div>'}
  if(fin){h+='<div class="tip">'+L('Debrief with your trainer: Where do you hold “the picture” while others hold “the pieces” at work?','للنقاش مع المدرب: أين تملك «الصورة» بينما يملك غيرك «القطع» في عملك؟')+'</div>'}
  h+='</div>';
  $('stageBox').innerHTML=h;
@@ -994,7 +995,7 @@ function renderResult(c,fin){
  if(fin&&PS.reveal&&!PS.local)setTimeout(openRank,1200)}
 function playAgain(){store.del('vf_me');if(PS){sessStop(PS);PS=null}me=emptyMe();curKey='';stopAmb();view('intro');checkResume();updateHUD()}
 /* solo practice (local session, no relay) */
-function soloRound(n){const cfg=cfgOf(n),N=cfg.cols*cfg.rows;emit(PS,{type:'round',n,brief:4,build:cfg.build});emit(PS,{type:'deal',team:0,n,guide:me.id,hands:{[me.id]:shuf([...Array(N).keys()],rngS(hashS(me.id+n)))}})}
+function soloRound(n){const cfg=cfgOf(n),N=cfg.cols*cfg.rows;emit(PS,{type:'round',n,brief:0,build:cfg.build,total:ROUNDS.length});emit(PS,{type:'deal',team:0,n,guide:me.id,hands:{[me.id]:shuf([...Array(N).keys()],rngS(hashS(me.id+n)))}})}
 /* ---------- leaderboard (teams) ---------- */
 function rankRowsHTML(S,myT,limit){const list=rankTeams(S).slice(0,limit||999);if(!list.length)return '<p class="muted">'+L('No results yet','لا توجد نتائج بعد')+'</p>';const medals=['🥇','🥈','🥉'],nr=Object.keys(S.rounds).length;
  return list.map((r,i)=>'<div class="rank r'+i+(r.t===myT?' me':'')+'" style="--tc:'+teamCol(r.t)+';animation-delay:'+Math.min(i,12)*70+'ms"><div style="flex:1"><div class="rankteam"><span class="nm">'+(medals[i]||(i+1)+'.')+' '+esc(teamName(r.t))+(r.t===myT?' ← '+L('YOUR TEAM','فريقك'):'')+'</span><span>★ '+r.score+'</span></div><small class="muted">'+r.done+'/'+nr+' '+L('online','شغّال')+' · ⏱ '+fmt(r.secs)+' · '+esc(members(S,r.t).map(p=>p.name).join(' · '))+'</small></div></div>').join('')}
@@ -1041,12 +1042,12 @@ function dealTeam(S,t,n){const mem=members(S,t);if(!mem.length)return;const cfg=
  const order=shuf(left,rngS(hashS(S.code+':'+t+':'+n+':'+(old?old.at:0)))),hands={};builders.forEach(m=>hands[m.id]=[]);
  order.forEach((tile,i)=>hands[builders[i%builders.length].id].push(tile));
  emit(S,{type:'deal',team:t,n,guide:guide.id,hands})}
-async function startRound(){const S=cur();if(!S)return;const n=lastRound(S)+1;if(n>ROUNDS.length){toast(L('All rounds were started.','تم تشغيل كل الجولات.'));return}
+async function startRound(){const S=cur();if(!S)return;const plan=+$('roundsSel').value,n=lastRound(S)+1;if(n>plan){toast(L('All rounds were started.','تم تشغيل كل الجولات.'));return}
  if(!S.players.size){toast(L('No players yet.','لا يوجد مشاركون بعد.'));snd('err');return}
  const prev=lastRound(S);if(prev&&phaseOf(S,prev)!=='over')emit(S,{type:'rend',n:prev});
  await syncClock(S);
  const brief=+$('briefSel').value,build=Math.max(60,Math.round(cfgOf(n).build*(+$('buildSel').value)/10)*10);
- emit(S,{type:'round',n,brief,build});teamsIn(S).forEach(t=>dealTeam(S,t,n));
+ emit(S,{type:'round',n,brief,build,total:plan});teamsIn(S).forEach(t=>dealTeam(S,t,n));
  snd('power');toast(L('Round '+n+' started','بدأت الجولة '+n));renderTrainer()}
 function endRound(){const S=cur();if(!S)return;const n=lastRound(S);if(!n||phaseOf(S,n)==='over')return;emit(S,{type:'rend',n});snd('boom');renderTrainer()}
 function redeal(){const S=cur();if(!S)return;const n=lastRound(S);if(!n)return;teamsIn(S).forEach(t=>dealTeam(S,t,n));toast(L('Pieces re-dealt to every team (placed pieces stay).','أُعيد توزيع القطع على كل الفرق (القطع الموضوعة تبقى).'))}
@@ -1080,7 +1081,7 @@ function renderTrainer(){
  const list=sorted(S),teams=teamsIn(S);let online=0;Object.keys(S.rounds).forEach(k=>teams.forEach(t=>{if(board(S,t,+k).done)online++}));
  countTo($('playerCount'),list.length,400);countTo($('teamCount'),teams.length,400);countTo($('doneCount'),online,400);
  $('revealBtn').classList.toggle('hide',S.reveal);$('hideBtn').classList.toggle('hide',!S.reveal);
- const nx=lastRound(S)+1,sb=$('startRoundBtn');sb.textContent=nx>ROUNDS.length?L('ALL ROUNDS STARTED','كل الجولات بدأت'):L('▶ START ROUND '+nx,'▶ ابدأ الجولة '+nx);sb.disabled=nx>ROUNDS.length;sb.classList.toggle('pulse-btn',nx<=ROUNDS.length);
+ const nx=lastRound(S)+1,sb=$('startRoundBtn');const plan=+$('roundsSel').value;sb.textContent=nx>plan?L('ALL PLANNED ROUNDS DONE','انتهت كل الجولات المخططة'):L('▶ START ROUND '+nx,'▶ ابدأ الجولة '+nx);sb.disabled=nx>plan;sb.classList.toggle('pulse-btn',nx<=plan);
  const ln=lastRound(S);$('endRoundBtn').disabled=!ln||phaseOf(S,ln)==='over';$('redealBtn').disabled=!ln;
  updateRoundStatus();
  syncCards($('teamGrid'),S,'t');
@@ -1139,7 +1140,7 @@ $('pinBtn').onclick=unlock;$('pinInput').onkeydown=e=>{if(e.key==='Enter')unlock
 $('copyLink').onclick=()=>{const S=cur();if(S)copyText(joinURL(S.code))};$('copyArabic').onclick=()=>{const S=cur();if(S)copyText(joinURL(S.code,'ar'))};
 $('projBtn').onclick=openProj;$('projClose').onclick=()=>$('proj').classList.add('hide');
 arm($('resetBtn'),()=>resetSession(TR.active));arm($('closeBtn'),()=>closeSession(TR.active));
-$('startRoundBtn').onclick=startRound;arm($('endRoundBtn'),endRound);$('redealBtn').onclick=redeal;
+$('startRoundBtn').onclick=startRound;$('roundsSel').onchange=()=>renderTrainer();arm($('endRoundBtn'),endRound);$('redealBtn').onclick=redeal;
 $('labelInput').oninput=e=>{const S=cur();if(S){S.label=e.target.value.slice(0,30);persist();renderTabs()}};
 $('revealBtn').onclick=()=>{const S=cur();if(!S)return;emit(S,{type:'reveal',show:true});toast(L('Leaderboard revealed to players','تم إظهار الترتيب للمشاركين'));snd('reveal');renderTrainer();if(!$('proj').classList.contains('hide'))renderProj()};
 $('hideBtn').onclick=()=>{const S=cur();if(!S)return;emit(S,{type:'reveal',show:false});renderTrainer();if(!$('proj').classList.contains('hide'))renderProj()};
