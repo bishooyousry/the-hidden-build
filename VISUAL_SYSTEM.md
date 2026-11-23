@@ -4,20 +4,15 @@
 Deep Navy #080828 (environment) · Soft White #EBF4FF (type, glass) · Soft Blue #4D88E8 (holographic interface, steel) · Moderate Cyan #40BDA9 (activation, energy, success) · Light Orange #FFBC3A (objectives, power core, winner) · Bright Coral #F26A44 (alerts, actuator, critical time). Transparency, gradients and glows are derived from these.
 
 ## Environment
-A living skyline on a Canvas (three parallax layers, lit windows, antenna beacons, traffic light streaks), a perspective grid floor, glass panels with HUD corner brackets, and an SVG hologram city on the entry screen. Motion stops under reduced-motion preferences.
+A living skyline on a Canvas (three parallax layers, lit windows, antenna beacons, traffic streaks), a perspective grid floor, glass panels with HUD corner brackets, an SVG hologram city on the entry screen.
 
-## Structural components (the five materials)
-| Colour | Component | Rendering |
-| --- | --- | --- |
-| White | Glass facade | Reflective glass with mullions |
-| Blue | Smart steel panel | Metallic panel with seams and rivets |
-| Cyan | Energy line / foundation | Circuit traces with a glowing node |
-| Orange | Power core | Radial glowing core that pulses |
-| Coral | Actuator | Hazard-stripe panel |
-Mini previews (projector, leaderboard) stay flat for legibility.
+## One structure, assembled from parts
+- The construction grid is a faint holographic lattice; filled cells **share edges and read as one surface**. Only the **silhouette** is lit (a bright top and side edge, rounded convex corners), so the structure looks like a single object, not tiles.
+- Each Builder's part is a slice of the structure, framed in the builder's own colour; the other parts are shown as restricted hatched areas.
+- Components: steel plating (diagonal plating lines), glass facade (mullions), energy line (conduits that run through cell centres and join their neighbours), power core (glowing, pulsing), actuator (hazard stripes). The palette is a row of round component chips with captions.
 
-## Moments
-Classified blueprint scans in; the mission countdown and "mission live" splash; module drop and light-up on reveal; a light sweep across the compared structures; **STRUCTURE ONLINE** glow for a perfect build; a staged leaderboard on the projector.
+## The structure comes alive
+Perfect build: STRUCTURE ONLINE banner, a brightness wave across the surface, a shape-specific light show (tower scan and beacon rings; bridge vehicles and cable pulses; dashboard trend line and scanning cursor; network data packets and hub rings), a pointer spotlight and tap ripples. Perfect teams also come alive on the projector leaderboard. Reduced-motion disables the animation.
 
 ## Language and layout
-LTR English and RTL Arabic; boards and zone labels stay left to right in both languages; Arabic letter-spacing is disabled; digits are Western; Arabic copy is formal Modern Standard Arabic.
+LTR English and RTL Arabic; boards stay left to right in both languages; Arabic letter-spacing is disabled; digits are Western; Arabic copy is formal Modern Standard Arabic.
